@@ -60,7 +60,7 @@ def test_authenticate():
     user = create_user("bob", "bobpass")
     assert login("bob", "bobpass") != None
 
-class UsersIntegrationTests(unittest.TestCase):
+class UserIntegrationTests(unittest.TestCase):
 
     def test_create_user(self):
         user = create_user("rick", "bobpass")
