@@ -6,28 +6,25 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username =  db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.String(50), nullable=False)
-
-    student = db.relationship('Student', backref='user', uselist=False)
-    employer = db.relationship('Employer', backref='user', uselist=False)
-    staff = db.relationship('Staff', backref='user', uselist=False)
+    email = db.Column(db.String(50), nullable=False, unique=True)
     
-    def __init__(self, username, password, role):
+    def __init__(self, username, password, email, role):
         self.username = username
         self.set_password(password)
-        self.role = role
+        self.email = email
 
     def get_json(self):
         return{
             'id': self.id,
-            'username': self.username
+            'username': self.username,
+            'email': self.email
         }
 
-    def set_password(self, password):
+    def setPassword(self, password):
         """Create hashed password."""
         self.password = generate_password_hash(password)
     
-    def check_password(self, password):
+    def checkPassword(self, password):
         """Check hashed password."""
         return check_password_hash(self.password, password)
         
