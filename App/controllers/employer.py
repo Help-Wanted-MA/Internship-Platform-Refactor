@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from App.states.state_enums import ApplicationStatus
 
 def create_position(employerId, title, requirements, description, availableSlots):
-    employer = Employer.query.filter_by(user_id=employerId).first()
+    employer = Employer.query.get(employerId)
 
     if employer is None:
         raise NotFoundError(f'Employer with id: {employerId} not found')
@@ -21,7 +21,7 @@ def create_position(employerId, title, requirements, description, availableSlots
         raise e
     
 def decide_shortlist(positionId, studentId, decision):
-    shortList = Application.query.get(positionId=positionId, studentId=studentId)
+    shortList = Application.query.filter_by(positionId=positionId, studentId=studentId)
 
     if shortList is None:
         raise NotFoundError(f'ShortList at Position {positionId} for Student {studentId}:  not found')
@@ -45,7 +45,7 @@ def decide_shortlist(positionId, studentId, decision):
     return shortList
 
 def manage_position_status(employerId, positionId, status):
-    position = Position.query.get(id=positionId, employerId=employerId)
+    position = Position.query.filter_by(id=positionId, employerId=employerId)
     status = status.lower()
 
     if position is None:
