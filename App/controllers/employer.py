@@ -30,6 +30,12 @@ def decide_shortlist(positionId, studentId, decision):
     else:
         shortList.deny()
 
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise e
+    
     return shortList
 
 def manage_position_status(employerId, positionId, status):
@@ -45,6 +51,12 @@ def manage_position_status(employerId, positionId, status):
         position.closed()
     else:
         raise ValidationError(f'Status "{status}" does not exist. Please Enter "open" or "closed"')
+
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise e
     
     return position
 
