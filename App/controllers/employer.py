@@ -49,10 +49,10 @@ def manage_position_status(employerId, positionId, status):
     return position
 
 
-def get_all_students():
+def get_all_employers():
     return Employer.query.all()
 
-def get_student(employerId):
+def get_employer(employerId):
     employer = Employer.query.get(employerId)
 
     if employer is None:
