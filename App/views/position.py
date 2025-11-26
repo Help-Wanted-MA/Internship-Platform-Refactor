@@ -2,8 +2,10 @@ from App.controllers.position import get_all_positions, get_position
 from flask import Blueprint, jsonify, request
 from App.main import login_required
 from flask_jwt_extended import jwt_required, current_user
+from App.exceptions.handlers import register_error_handlers
 
 position_views = Blueprint('position_views', __name__)
+register_error_handlers(position_views)
 
 # View ONE position
 @position_views.route('/positions/<int:position_id>', methods=['GET'])
