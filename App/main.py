@@ -24,7 +24,6 @@ def login_required(required_class):
 
     def wrapper(fn):
         @wraps(fn)
-        @jwt_required()
         def decorated(*args, **kwargs):
             identity = get_jwt_identity()
             # identity is their username (from login())
