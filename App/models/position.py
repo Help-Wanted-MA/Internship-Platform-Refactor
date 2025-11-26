@@ -26,6 +26,12 @@ class Position(db.Model):
         self.availableSlots = availableSlots
         self.status = PositionStatus.open
 
+    def open(self):
+        self.status = PositionStatus.open
+    
+    def closed(self):
+        self.status = PositionStatus.closed
+
     def toJSON(self):
         return {
             "id": self.id,
