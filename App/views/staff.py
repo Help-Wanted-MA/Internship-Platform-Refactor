@@ -15,20 +15,18 @@ register_error_handlers(staff_views)
 @staff_views.route('/staff/students', methods=['GET'])
 @login_required(Staff)
 def staff_get_students():
-    return jsonify(get_all_students()), 200
+    students = get_all_students()
+    return jsonify([s.toJSON() for s in students]), 200
 
 # View student
 @staff_views.route('/staff/students/<int:student_id>', methods=['GET'])
 @login_required(Staff)
 def staff_view_student(student_id):
-    return jsonify(get_student(student_id)), 200
+    return jsonify(get_student(student_id).toJSON()), 200
 
 # Shortlist student
-@staff_views.route('/staff/applications/<int:application_id>/shortlist', methods=['PUT'])
+@staff_views.route('/staff/positions/<int:position_id>/shortlist/<int:student_id>', methods=['PUT'])
 @login_required(Staff)
-def staff_shortlist(application_id):
-    data = request.json
-    studentId = data["studentId"]
-    positionId = data["positionId"]
-    result = shortlist_student(studentId, positionId)
-    return jsonify(result), 200
+def staff_shortlist(position_id, student_id):
+    result = shortlist_student(student_id, position_id)
+    return jsonify(result.toJSON()), 200
