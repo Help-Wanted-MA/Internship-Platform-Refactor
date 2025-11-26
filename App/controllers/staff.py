@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from App.states.state_enums import ApplicationStatus
     
 def shortlist_student(studentId, positionId):
-    application = Application.query.get(positionId=positionId, studentId=studentId)
+    application = Application.query.filter_by(positionId=positionId, studentId=studentId).first()
 
     if application is None:
         raise NotFoundError(f'Application at Position {positionId} for Student {studentId}:  not found')
