@@ -7,7 +7,7 @@ def create_position(employerId, title, requirements, description, availableSlots
     employer = Employer.query.filter_by(user_id=employerId).first()
 
     if employer is None:
-        raise NotFoundError(f'Emploeyer with id: {employerId} not found')
+        raise NotFoundError(f'Employer with id: {employerId} not found')
     
     newPosition = Position(employerId=employer.id, title=title, requirements=requirements, description=description, availableSlots=availableSlots)
     db.session.add(newPosition)
