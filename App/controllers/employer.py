@@ -2,6 +2,7 @@ from App.exceptions.exceptions import *
 from App.models import Position, Employer, Application
 from App.database import db
 from sqlalchemy.exc import SQLAlchemyError
+from App.states.state_enums import ApplicationStatus
 
 def create_position(employerId, title, requirements, description, availableSlots):
     employer = Employer.query.filter_by(user_id=employerId).first()
@@ -25,6 +26,11 @@ def decide_shortlist(positionId, studentId, decision):
     if shortList is None:
         raise NotFoundError(f'ShortList at Position {positionId} for Student {studentId}:  not found')
     
+    if shortList.get_state() == ApplicationStatus.SHORTLISTED:
+        shortList.accept()
+    else:
+        raise ValidationError(f'Student is not Shortlisted for this position')
+
     if decision:
         shortList.accept()
     else:
