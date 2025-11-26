@@ -6,5 +6,5 @@ def get_position(positionId):
     if position is None:
         raise NotFoundError(f'Position with id: {positionId} not found') 
     
-def get_all_position():
+def get_all_positions():
     return Position.query.all()
