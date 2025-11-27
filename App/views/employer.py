@@ -53,6 +53,6 @@ def employer_status_change(employer_id, position_id):
 # Employer view student
 @employer_views.route('/employers/<int:employer_id>/students/<int:student_id>', methods=['GET'])
 @login_required(Employer)
-def employer_view_student(employer_id, student_id):
+def employer_view_student(student_id):
     student = get_student(student_id)
     return jsonify(student.toJSON()), 200

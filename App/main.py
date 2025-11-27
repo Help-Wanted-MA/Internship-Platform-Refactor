@@ -16,31 +16,8 @@ from App.controllers import (
     add_auth_context
 )
 
-from App.models import Employer, Student, Staff, User   # <-- IMPORTANT
+from App.models import Employer, Student, Staff, User
 from App.views import views
-
-
-def login_required(required_class):
-
-    def wrapper(fn):
-        @wraps(fn)
-        def decorated(*args, **kwargs):
-            identity = get_jwt_identity()
-            # identity is their username (from login())
-            # We find the actual user object
-            user = User.query.filter_by(username=identity).first()
-
-            if not user:
-                return jsonify({"error": "User not found"}), 404
-
-            # Role check: class type comparison
-            if not isinstance(user, required_class):
-                return jsonify({"error": "Forbidden: invalid role"}), 403
-
-            return fn(*args, **kwargs)
-        return decorated
-
-    return wrapper
 
 
 def add_views(app):
