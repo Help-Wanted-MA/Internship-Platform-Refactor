@@ -4,11 +4,11 @@ from datetime import date
 
 class Student(User):
     __tablename__ = 'student'
-    id = db.Column(db.Integer, primary_key=True)
-    degree = db.Column(db.String(30), nullable=False)
-    resume = db.Column(db.JSON, nullable=False)
-    gpa = db.Column(db.Float, nullable=False)
-    dob = db.Column(db.Date, nullable=False)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    dob = db.Column(db.Date)
+    degree = db.Column(db.String(256))
+    gpa = db.Column(db.Float)
+    resume = db.Column(db.String(256))
 
     __mapper_args__ = {
         'polymorphic_identity': 'student'

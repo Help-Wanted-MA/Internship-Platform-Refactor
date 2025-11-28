@@ -7,8 +7,10 @@ class User(db.Model):
     username =  db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
+    role = db.Column(db.String(50))
+    __mapper_args__ = {'polymorphic_identity': 'user', 'polymorphic_on': role}
     
-    def __init__(self, username, password, email, role):
+    def __init__(self, username, password, email):
         self.username = username
         self.set_password(password)
         self.email = email
@@ -20,11 +22,11 @@ class User(db.Model):
             'email': self.email
         }
 
-    def setPassword(self, password):
+    def set_password(self, password):
         """Create hashed password."""
         self.password = generate_password_hash(password)
     
-    def checkPassword(self, password):
+    def check_password(self, password):
         """Check hashed password."""
         return check_password_hash(self.password, password)
         

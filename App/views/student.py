@@ -1,3 +1,4 @@
+from flask_jwt_extended import get_jwt_identity
 from App.models.student import Student
 from flask import Blueprint, jsonify, request
 from App.decorators.auth import login_required
@@ -11,27 +12,19 @@ student_views = Blueprint('student_views', __name__)
 register_error_handlers(student_views)
 
 # View shortlisted positions
-@student_views.route('/students/<int:student_id>/applications', methods=['GET'])
+@student_views.route('/students/applications', methods=['GET'])
 @login_required(Student)
-def get_shortlisted(student_id):
-    state = request.args.get("state")
-
-    if state != "Shortlisted":
-        return jsonify({"error": "Invalid state parameter"}), 400
-    
+def get_shortlisted():
+    student_id = get_jwt_identity()
     applications = view_shortlisted_positions(student_id)
-    return jsonify([a.toJSON() for a in applications]), 200
+    return jsonify([application.get_json() for application in applications]), 200
 
 # View employer response
-@student_views.route('/students/<int:student_id>/applications/<int:position_id>', methods=['GET'])
+@student_views.route('/students/applications/<int:position_id>', methods=['GET'])
 @login_required(Student)
-def student_get_employer_response(student_id, position_id):
+def student_get_employer_response(position_id):
+    student_id = get_jwt_identity()
     response = view_employer_response(student_id, position_id)
 
-    # Wrap the response in a JSON structure
-    return jsonify({
-        "studentId": student_id,
-        "positionId": position_id,
-        "status": response
-        }), 200
+    return jsonify(response), 200
     
