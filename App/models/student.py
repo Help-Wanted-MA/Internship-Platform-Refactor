@@ -1,6 +1,5 @@
 from App.database import db
 from App.models.user import User
-from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import date
 
 class Student(User):
@@ -15,18 +14,24 @@ class Student(User):
         'polymorphic_identity': 'student'
     }
 
-    def __init__(self, username, password, email):
+    def __init__(self, username, password, email, degree, resume, gpa, dob):
         super().__init__(username, password, email)
+        self.degree = degree
+        self.resume = resume
+        self.gpa = gpa
+        self.dob = dob
 
-#    def update_DOB(self, date):
-#        self.DOB = date
-#        db.session.commit()
-#        return self.DOB
-#        
-#   @hybrid_property
-#   def age(self):
-#       if self.DOB is None:
-#           return None
-#       today = date.today()
-#       dob = self.DOB
-#       return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    def get_age(self):
+        today = date.today()
+        return today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+    
+    def get_json(self):
+        return{
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'degree': self.degree,
+            'resume': self.resume,
+            'gpa': self.gpa,
+            'dob': self.dob.strftime("%d/%m/%Y")
+        }
