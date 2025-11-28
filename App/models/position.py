@@ -32,7 +32,7 @@ class Position(db.Model):
     def closed(self):
         self.status = PositionStatus.closed
 
-    def toJSON(self):
+    def get_json(self):
         return {
             "id": self.id,
             "employerId": self.employerId,

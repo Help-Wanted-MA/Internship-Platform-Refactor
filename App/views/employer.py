@@ -1,3 +1,4 @@
+from flask_jwt_extended import get_jwt_identity
 from App.exceptions.handlers import register_error_handlers
 from App.models.employer import Employer
 from flask import Blueprint, jsonify, request
@@ -13,9 +14,10 @@ employer_views = Blueprint('employer_views', __name__)
 register_error_handlers(employer_views)
 
 # Create Internship Position
-@employer_views.route('/employers/<int:employer_id>/positions', methods=['POST'])
+@employer_views.route('/employers/positions', methods=['POST'])
 @login_required(Employer)
-def employer_create_position(employer_id):
+def employer_create_position():
+    employer_id = get_jwt_identity()
     data = request.json
     pos = create_position(
         employerId=employer_id,
@@ -24,35 +26,39 @@ def employer_create_position(employer_id):
         description=data["description"],
         availableSlots=data["availableSlots"]
     )
-    return jsonify(pos.toJSON()), 201
+    return jsonify({"success": True, "result": pos.get_json()}), 201
 
 # Accept/Reject student from shortlist
-@employer_views.route('/employers/<int:employer_id>/applications/<int:application_id>/decision', methods=['PUT'])
+@employer_views.route('/employers/positions/<int:position_id>/decision', methods=['PATCH'])
 @login_required(Employer)
-def employer_decide_shortlist(employer_id, application_id):
+def employer_decide_shortlist(position_id):
+    employer_id = get_jwt_identity()
     data = request.json
     result = decide_shortlist(
-        positionId=data["positionId"],
+        employerId=employer_id,
+        positionId=position_id,
         studentId=data["studentId"],
-        decision=data["decision"]
+        accept=data["accept"],
+        message=data["message"]
     )
-    return jsonify(result.toJSON()), 200
+    return jsonify({"success": True, "result": result.get_json()}), 200
 
 # Open/close position
-@employer_views.route('/employers/<int:employer_id>/positions/<int:position_id>/status', methods=['PUT'])
+@employer_views.route('/employers/positions/<int:position_id>/status', methods=['PATCH'])
 @login_required(Employer)
-def employer_status_change(employer_id, position_id):
+def employer_status_change(position_id):
+    employer_id = get_jwt_identity()
     data = request.json
     result = manage_position_status(
         employerId=employer_id,
         positionId=position_id,
         status=data["status"]
     )
-    return jsonify(result.toJSON()), 200
+    return jsonify({"success": True, "result": result.get_json()}), 200
 
 # Employer view student
-@employer_views.route('/employers/<int:employer_id>/students/<int:student_id>', methods=['GET'])
+@employer_views.route('/employers/students/<int:student_id>', methods=['GET'])
 @login_required(Employer)
 def employer_view_student(student_id):
     student = get_student(student_id)
-    return jsonify(student.toJSON()), 200
+    return jsonify(student.get_json()), 200
