@@ -20,11 +20,11 @@ class User(db.Model):
             'email': self.email
         }
 
-    def setPassword(self, password):
+    def set_password(self, password):
         """Create hashed password."""
         self.password = generate_password_hash(password)
     
-    def checkPassword(self, password):
+    def check_password(self, password):
         """Check hashed password."""
         return check_password_hash(self.password, password)
         
