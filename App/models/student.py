@@ -1,34 +1,37 @@
 from App.database import db
 from App.models.user import User
-from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import date
 
-class Student(db.Model):
+class Student(User):
     __tablename__ = 'student'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
-    username =  db.Column(db.String(20), nullable=False, unique=True)
-    email = db.Column(db.String(256))
-    dob = db.Column(db.Date)
-    gender = db.Column(db.String(256))
-    degree = db.Column(db.String(256))
-    phone = db.Column(db.String(256))
-    gpa = db.Column(db.Float)
-    resume = db.Column(db.String(256))
+    degree = db.Column(db.String(30), nullable=False)
+    resume = db.Column(db.JSON, nullable=False)
+    gpa = db.Column(db.Float, nullable=False)
+    dob = db.Column(db.Date, nullable=False)
 
-    def __init__(self, username, user_id):
-        self.username = username
-        self.user_id = user_id
+    __mapper_args__ = {
+        'polymorphic_identity': 'student'
+    }
 
-#    def update_DOB(self, date):
-#        self.DOB = date
-#        db.session.commit()
-#        return self.DOB
-#        
-#   @hybrid_property
-#   def age(self):
-#       if self.DOB is None:
-#           return None
-#       today = date.today()
-#       dob = self.DOB
-#       return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    def __init__(self, username, password, email, degree, resume, gpa, dob):
+        super().__init__(username, password, email)
+        self.degree = degree
+        self.resume = resume
+        self.gpa = gpa
+        self.dob = dob
+
+    def get_age(self):
+        today = date.today()
+        return today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+    
+    def get_json(self):
+        return{
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'degree': self.degree,
+            'resume': self.resume,
+            'gpa': self.gpa,
+            'dob': self.dob.strftime("%d/%m/%Y")
+        }
