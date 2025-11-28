@@ -36,9 +36,9 @@ def get_student(studentId):
     
     return student
 
-def create_student(username, password, email):
+def create_student(username, password, email, degree, resume, gpa):
     try:
-        student = Student(username, password, email)
+        student = Student(username, password, email, degree, resume, gpa)
         db.session.add(student)
         
         positions = Position.query.all()
