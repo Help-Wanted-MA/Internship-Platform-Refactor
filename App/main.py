@@ -49,4 +49,4 @@ def create_app(overrides={}):
     return app
 
 
-__all__ = ["login_required", "create_app"]
+__all__ = ["create_app"]
