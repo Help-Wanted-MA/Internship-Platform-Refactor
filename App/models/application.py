@@ -9,27 +9,30 @@ class Application(db.Model):
     positionId = db.Column(db.Integer, db.ForeignKey('position.id'), nullable=False)
     studentId = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
     staffId = db.Column(db.Integer, db.ForeignKey('staff.id'), nullable=True)
+    employerId = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=True)
+    employerResponse = db.Column(db.String(256), nullable=True)
     state = db.Column(Enum(ApplicationStatus, native_enum=False), nullable=False, default=ApplicationStatus.APPLIED)
 
-    def __init__(self, positionId, studentId, staffId):
+    def __init__(self, positionId, studentId):
         self.positionId = positionId
         self.studentId = studentId
-        self.staffId = staffId
 
     def get_state(self):
         return get_state_object(self)
     
-    def accept(self):
-        return self.get_state().accept()
+    def accept(self, transitionContext):
+        return self.get_state().accept(transitionContext)
     
-    def deny(self):
-        return self.get_state().deny()
+    def deny(self, transitionContext):
+        return self.get_state().deny(transitionContext)
     
-    def toJSON(self):
+    def get_json(self):
         return {
             "id": self.id,
             "positionId": self.positionId,
             "studentId": self.studentId,
             "staffId": self.staffId,
-            "state": self.state.value
+            "state": self.state.value,
+            "employerId": self.employerId,
+            "employerResponse": self.employerResponse
         }
