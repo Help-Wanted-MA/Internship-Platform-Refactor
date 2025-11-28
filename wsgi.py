@@ -1,11 +1,11 @@
 import click, pytest, sys
 from flask.cli import with_appcontext, AppGroup
-
-from App.controllers.employer import create_position, decide_shortlist, get_all_employers, get_employer, manage_position_status
 from App.database import db, get_migrate
 from App.models import User
 from App.main import create_app
-from App.controllers import (create_user, get_all_users_json, get_all_users, initialize)
+from App.controllers import (create_user, get_all_users_json, get_all_users, initialize, get_all_applications,
+                             get_application, create_position, decide_shortlist, get_all_employers, get_employer,
+                             manage_position_status, get_all_positions, get_position)
 
 
 # This commands file allow you to create convenient CLI commands for testing controllers
@@ -62,13 +62,14 @@ Employer Commands
 
 employer_cli = AppGroup('employer', help='Employer object commands')
 
+
 @employer_cli.command("list", help="Lists all employers in the database")
 def list_employers_command():
     employers = get_all_employers()
     if employers:
         for emp in employers:
             print(f'Employer ID: {emp.id} | Username: {emp.username}')
-        print("------------------------------------------\n")
+        print("------------------------------------------------------------------------\n")
     else:
         print("No employers found")
 
@@ -79,7 +80,7 @@ def get_employer_command(employer_id):
     try:
         employer = get_employer(employer_id)
         print(f'Employer ID: {employer.id} | Username: {employer.username}')
-        print("------------------------------------------\n")
+        print("------------------------------------------------------------------------\n")
     except Exception as e:
         print(e)
         
@@ -102,11 +103,11 @@ def employer_create_position_command(employer_id, title, requirements, descripti
         print(f"  Description: {position.description}")
         print(f"  Available Slots: {position.availableSlots}")
         print(f"  Status: {position.status.value}")
-        print("------------------------------------------\n")
+        print("------------------------------------------------------------------------\n")
         
     except Exception as e:
         print(e)
-        print("------------------------------------------\n")
+        print("------------------------------------------------------------------------\n")
 
 
 @employer_cli.command("decide_shortlist", help="Accept or reject a shortlisted student")
@@ -134,11 +135,11 @@ def employer_decide_shortlist_command(employer_id, position_id, student_id, deci
         print(f"  Student ID: {student_id}")
         print(f"  Decision: {decision_lower.upper()}")
         print(f"  Application Status: {application.state.value}")
-        print("------------------------------------------\n")
+        print("------------------------------------------------------------------------\n")
         
     except Exception as e:
         print(e)
-        print("------------------------------------------\n")
+        print("------------------------------------------------------------------------\n")
 
 
 @employer_cli.command("manage_status", help="Open or close an internship position")
@@ -154,11 +155,125 @@ def employer_manage_status_command(employer_id, position_id, status):
         print(f"  Position ID: {position_id}")
         print(f"  Position Title: {position.title}")
         print(f"  New Status: {position.status.value}")
-        print("------------------------------------------\n")
+        print("------------------------------------------------------------------------\n")
         
     except Exception as e:
         print(e)
-        print("------------------------------------------\n")
+        print("------------------------------------------------------------------------\n")
+        
+        
+app.cli.add_command(employer_cli)
+
+
+'''
+Generic Commands
+'''
+
+
+generic_cli = AppGroup('view', help='Generic view commands')
+
+
+@generic_cli.command("application", help="View details of a specific application")
+@click.argument("application_id", type=int)
+def view_application_command(application_id):
+    
+    try:
+        application = get_application(application_id)
+        
+        print("\n========================================================================")
+        print("APPLICATION DETAILS")
+        print("========================================================================")
+        print(f"Application ID: {application.id}")
+        print(f"Position ID: {application.positionId}")
+        print(f"Student ID: {application.studentId}")
+        print(f"Current Status: {application.get_state().value}")
+        print("========================================================================\n")
+        
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+
+@generic_cli.command("applications", help="View all applications in the system")
+def view_all_applications_command():
+
+    try:
+        applications = get_all_applications()
+        
+        if not applications:
+            print("\nNo applications found.\n")
+            return
+        
+        print("\n========================================================================")
+        print("ALL APPLICATIONS")
+        print("========================================================================")
+        print(f"{'App ID':<8} {'Position ID':<12} {'Student ID':<12} {'Status':<20}")
+        print("------------------------------------------------------------------------")
+        
+        for app in applications:
+            status = app.state.value
+            print(f"{app.id:<8} {app.positionId:<12} {app.studentId:<12} {status:<20}")
+        
+        print("========================================================================")
+        
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+
+@generic_cli.command("position", help="View details of a specific internship position")
+@click.argument("position_id", type=int)
+def view_position_command(position_id):
+
+    try:
+        position = get_position(position_id)
+        
+        print("\n========================================================================")
+        print("POSITION DETAILS")
+        print("========================================================================")
+        print(f"Position ID: {position.id}")
+        print(f"Employer ID: {position.employerId}")
+        print(f"Title: {position.title}")
+        print(f"Requirements: {position.requirements}")
+        print(f"Description: {position.description}")
+        print(f"Available Slots: {position.availableSlots}")
+        print(f"Status: {position.status.value}")
+        print("========================================================================\n")
+        
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+
+@generic_cli.command("positions", help="View all available internship positions")
+def view_all_positions_command():
+
+    try:
+        positions = get_all_positions()
+        
+        if not positions:
+            print("\nNo positions found in the system.\n")
+            return
+        
+        print("\n========================================================================")
+        print("ALL INTERNSHIP POSITIONS")
+        print("========================================================================")
+        print(f"{'Pos ID':<8} {'Employer':<10} {'Title':<25} {'Slots':<6} {'Status':<15}")
+        print("------------------------------------------------------------------------")
+        
+        for pos in positions:
+            # Literally all this does is truncate the title, adding ... to the end of it, if it's too long.
+            title = pos.title[:22] + "..." if len(pos.title) > 25 else pos.title
+            print(f"{pos.id:<8} {pos.employerId:<10} {title:<25} {pos.availableSlots:<6} {pos.status.value:<15}")
+        
+        print("========================================================================")
+        
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+
+app.cli.add_command(generic_cli)
 
 
 '''
