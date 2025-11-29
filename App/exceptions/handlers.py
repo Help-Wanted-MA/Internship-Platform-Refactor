@@ -17,3 +17,7 @@ def register_error_handlers(blueprint):
     @blueprint.errorhandler(InternalError)
     def handle_internal(e):
         return jsonify({"success": False, "error": "Internal server error"}), 500
+    
+    @blueprint.errorhandler(Exception)
+    def handle_generic_error(error):
+        return jsonify({"success": False, "error": str(error)}), 500

@@ -11,8 +11,12 @@ class Application(db.Model):
     staffId = db.Column(db.Integer, db.ForeignKey('staff.id'), nullable=True)
     employerId = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=True)
     employerResponse = db.Column(db.String(256), nullable=True)
-    state = db.Column(Enum(ApplicationStatus, native_enum=False), nullable=False)
-
+    state = db.Column(Enum(ApplicationStatus, native_enum=False), nullable=False, default=ApplicationStatus.APPLIED)
+    position = db.relationship("Position", backref="applications", lazy=True)
+    student = db.relationship("Student", backref="applications", lazy=True)
+    staff = db.relationship("Staff", backref="shortlistedApplications", lazy=True)
+    employer = db.relationship("Employer", backref="decidedApplications", lazy=True)
+    
     def __init__(self, positionId, studentId):
         self.positionId = positionId
         self.studentId = studentId
