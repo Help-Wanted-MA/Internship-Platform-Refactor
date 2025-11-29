@@ -14,3 +14,11 @@ class Employer(User):
     def __init__(self, username, password, email, company):
         super().__init__(username, password, email)
         self.company = company
+        
+    def get_json(self):
+        return{
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'company': self.company
+        }
