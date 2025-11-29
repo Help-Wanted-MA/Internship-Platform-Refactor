@@ -2,6 +2,7 @@ from App.exceptions.exceptions import *
 from App.models import Application, Staff
 from App.database import db
 from sqlalchemy.exc import SQLAlchemyError
+from App.models.position import Position, PositionStatus
 from App.states.state_enums import ApplicationStatus, TransitionContext
     
 def shortlist_student(positionId, studentId, staff_id):
@@ -9,6 +10,10 @@ def shortlist_student(positionId, studentId, staff_id):
     
     if application is None:
         raise NotFoundError(f'Application at Position {positionId} for Student {studentId}:  not found')
+    
+    position = Position.query.get(positionId)
+    if position.status == PositionStatus.closed:
+        raise ValidationError(f'Unable to shortlist student. Position with ID: {positionId} is current closed.')
     
     transitionContext = TransitionContext(staff_id)
     if application.state == ApplicationStatus.APPLIED:
