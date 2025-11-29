@@ -1,0 +1,1302 @@
+{
+	"info": {
+		"_postman_id": "1e463e12-120f-4edf-bf40-6a590a33a20e",
+		"name": "HelpWanted3613Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43999413"
+	},
+	"item": [
+		{
+			"name": "Initialize",
+			"item": [
+				{
+					"name": "Initialize",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"pm.test(\"Response is JSON\", () => {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const result = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response has expected fields\", () => {\r",
+									"    pm.expect(result).to.have.property(\"message\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field types are correct\", () => {\r",
+									"    pm.expect(result.message).to.be.a(\"string\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/init",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"init"
+							]
+						},
+						"description": "Initializes the database"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/init",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"init"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 21 Oct 2025 00:40:30 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "35"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"db initialized!\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Staff",
+			"item": [
+				{
+					"name": "Login Staff",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let data = pm.response.json();\r",
+									"\r",
+									"if (data.access_token) {\r",
+									"    pm.collectionVariables.set(\"accessToken\", data.access_token);\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"const result = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Response has access token\", () => {\r",
+									"    pm.expect(result).to.have.property(\"access_token\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Access token is a string\", () => {\r",
+									"    pm.expect(result.access_token).to.be.a(\"string\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"John\", \r\n    \"password\": \"johnpass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View all Students",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", () => {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const json = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response is an array\", () => {\r",
+									"    pm.expect(json).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"if (json.length > 0) {\r",
+									"    const student = json[0];\r",
+									"\r",
+									"    pm.test(\"Student object contains expected fields\", () => {\r",
+									"        pm.expect(student).to.have.property(\"id\");\r",
+									"        pm.expect(student).to.have.property(\"username\");\r",
+									"        pm.expect(student).to.have.property(\"email\");\r",
+									"        pm.expect(student).to.have.property(\"degree\");\r",
+									"        pm.expect(student).to.have.property(\"resume\");\r",
+									"        pm.expect(student).to.have.property(\"gpa\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Field types are correct\", () => {\r",
+									"        pm.expect(student.id).to.be.a(\"number\");\r",
+									"        pm.expect(student.username).to.be.a(\"string\");\r",
+									"        pm.expect(student.email).to.be.a(\"string\");\r",
+									"        pm.expect(student.degree).to.be.a(\"string\");\r",
+									"        pm.expect(student.gpa).to.be.a(\"number\");\r",
+									"        pm.expect(student.resume).to.be.an('object');\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/staff/students",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"staff",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", () => {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const student = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response has expected fields\", () => {\r",
+									"    pm.expect(student).to.have.property(\"id\");\r",
+									"    pm.expect(student).to.have.property(\"username\");\r",
+									"    pm.expect(student).to.have.property(\"email\");\r",
+									"    pm.expect(student).to.have.property(\"degree\");\r",
+									"    pm.expect(student).to.have.property(\"resume\");\r",
+									"    pm.expect(student).to.have.property(\"gpa\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field types are correct\", () => {\r",
+									"    pm.expect(student.id).to.be.a(\"number\");\r",
+									"    pm.expect(student.username).to.be.a(\"string\");\r",
+									"    pm.expect(student.email).to.be.a(\"string\");\r",
+									"    if (student.degree !== null) { pm.expect(student.degree).to.be.a(\"string\"); }\r",
+									"    if (student.resume !== null) { pm.expect(student.resume).to.be.an(\"object\"); }\r",
+									"    if (student.gpa !== null) { pm.expect(student.gpa).to.be.a(\"number\"); }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/staff/students/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"staff",
+								"students",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3",
+									"description": "The ID of the student to view"
+								}
+							]
+						},
+						"description": "Returns the details of the Report with the given ID"
+					},
+					"response": []
+				},
+				{
+					"name": "View all Positions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON array\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    pm.expect(pm.response.json()).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"const positions = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Each position has expected fields\", function () {\r",
+									"    positions.forEach(function(position) {\r",
+									"        pm.expect(position).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(position).to.have.property(\"employerId\").that.is.a(\"number\");\r",
+									"        pm.expect(position).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"        pm.expect(position).to.have.property(\"requirements\").that.is.a(\"string\");\r",
+									"        pm.expect(position).to.have.property(\"description\").that.is.a(\"string\");\r",
+									"        pm.expect(position).to.have.property(\"availableSlots\").that.is.a(\"number\");\r",
+									"        pm.expect(position).to.have.property(\"status\").that.is.a(\"string\");\r",
+									"        pm.expect(position).to.have.property(\"company\").that.satisfy(function(v) {\r",
+									"            return v === null || typeof v === \"string\";\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/staff/positions",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"staff",
+								"positions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Shortlist Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is an object\", function () {\r",
+									"    pm.expect(body).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Success flag is true\", function () {\r",
+									"    pm.expect(body.success).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Application result has required fields\", function () {\r",
+									"    pm.expect(body).to.have.property(\"ApplicationID\");\r",
+									"    pm.expect(body).to.have.property(\"Position\");\r",
+									"    pm.expect(body).to.have.property(\"Company\");\r",
+									"    pm.expect(body).to.have.property(\"Student\");\r",
+									"    pm.expect(body).to.have.property(\"Status\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field types are correct\", function () {\r",
+									"    pm.expect(body.ApplicationID).to.be.a(\"number\");\r",
+									"    pm.expect(body.Position).to.be.a(\"string\");\r",
+									"    pm.expect(body.Company).to.be.a(\"string\");\r",
+									"    pm.expect(body.Student).to.be.a(\"string\");\r",
+									"    pm.expect(body.Status).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status is SHORTLISTED\", function () {\r",
+									"    pm.expect(body.Status).to.eql(\"SHORTLISTED\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/staff/positions/:positionId/shortlist/:studentId",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"staff",
+								"positions",
+								":positionId",
+								"shortlist",
+								":studentId"
+							],
+							"variable": [
+								{
+									"key": "positionId",
+									"value": "4",
+									"description": "The ID of the position to shortlist the student for"
+								},
+								{
+									"key": "studentId",
+									"value": "2",
+									"description": "The ID of the student to shortlist"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employer",
+			"item": [
+				{
+					"name": "Login Employer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let data = pm.response.json();\r",
+									"\r",
+									"if (data.access_token) {\r",
+									"    pm.collectionVariables.set(\"accessToken\", data.access_token);\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"const result = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Response has access token\", () => {\r",
+									"    pm.expect(result).to.have.property(\"access_token\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Access token is a string\", () => {\r",
+									"    pm.expect(result.access_token).to.be.a(\"string\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Frank\", \r\n    \"password\": \"frankpass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Position",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Top-level success flag is true\", function () {\r",
+									"    pm.expect(body.success).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"'result' field exists\", function () {\r",
+									"    pm.expect(body).to.have.property(\"result\");\r",
+									"});\r",
+									"\r",
+									"const result = body.result;\r",
+									"\r",
+									"pm.test(\"Result has expected fields\", function () {\r",
+									"    pm.expect(result).to.have.property(\"id\");\r",
+									"    pm.expect(result).to.have.property(\"employerId\");\r",
+									"    pm.expect(result).to.have.property(\"title\");\r",
+									"    pm.expect(result).to.have.property(\"requirements\");\r",
+									"    pm.expect(result).to.have.property(\"description\");\r",
+									"    pm.expect(result).to.have.property(\"availableSlots\");\r",
+									"    pm.expect(result).to.have.property(\"status\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Result field types are correct\", function () {\r",
+									"    pm.expect(result.id).to.be.a(\"number\");\r",
+									"    pm.expect(result.employerId).to.be.a(\"number\");\r",
+									"    pm.expect(result.title).to.be.a(\"string\");\r",
+									"    pm.expect(result.requirements).to.be.a(\"string\");\r",
+									"    pm.expect(result.description).to.be.a(\"string\");\r",
+									"    pm.expect(result.availableSlots).to.be.a(\"number\");\r",
+									"    pm.expect(result.status).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status should default to open\", function () {\r",
+									"    pm.expect(result.status).to.eql(\"open\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Position\",\r\n    \"requirements\": \"Some requirements\",\r\n    \"description\": \"Test position created from Postman\",\r\n    \"availableSlots\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/employers/positions",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"employers",
+								"positions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Positions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON array\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    pm.expect(pm.response.json()).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"const positions = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Each position has expected fields\", function () {\r",
+									"    positions.forEach(function(position) {\r",
+									"        pm.expect(position).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(position).to.have.property(\"employerId\").that.is.a(\"number\");\r",
+									"        pm.expect(position).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"        pm.expect(position).to.have.property(\"requirements\").that.is.a(\"string\");\r",
+									"        pm.expect(position).to.have.property(\"description\").that.is.a(\"string\");\r",
+									"        pm.expect(position).to.have.property(\"availableSlots\").that.is.a(\"number\");\r",
+									"        pm.expect(position).to.have.property(\"status\").that.is.a(\"string\");\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/employers/positions",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"employers",
+								"positions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Position Shortlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response should be an array\", function () {\r",
+									"    pm.expect(Array.isArray(body)).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Each student has required fields\", function () {\r",
+									"    body.forEach(function(student) {\r",
+									"        pm.expect(student).to.have.property(\"id\");\r",
+									"        pm.expect(student).to.have.property(\"username\");\r",
+									"        pm.expect(student).to.have.property(\"email\");\r",
+									"        pm.expect(student).to.have.property(\"degree\");\r",
+									"        pm.expect(student).to.have.property(\"resume\");\r",
+									"        pm.expect(student).to.have.property(\"gpa\");\r",
+									"\r",
+									"        pm.expect(student.id).to.be.a(\"number\");\r",
+									"        pm.expect(student.username).to.be.a(\"string\");\r",
+									"        pm.expect(student.email).to.be.a(\"string\");\r",
+									"        pm.expect(student.degree).to.be.a(\"string\");\r",
+									"        pm.expect(student.gpa).to.be.a(\"number\");\r",
+									"        pm.expect(student.resume).to.be.an(\"object\"); \r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/employers/positions/:position_id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"employers",
+								"positions",
+								":position_id"
+							],
+							"variable": [
+								{
+									"key": "position_id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response has expected student fields\", function () {\r",
+									"    pm.expect(body).to.have.property(\"id\");\r",
+									"    pm.expect(body).to.have.property(\"username\");\r",
+									"    pm.expect(body).to.have.property(\"email\");\r",
+									"    pm.expect(body).to.have.property(\"degree\");\r",
+									"    pm.expect(body).to.have.property(\"resume\");\r",
+									"    pm.expect(body).to.have.property(\"gpa\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Student field types are correct\", function () {\r",
+									"    pm.expect(body.id).to.be.a(\"number\");\r",
+									"    pm.expect(body.username).to.be.a(\"string\");\r",
+									"    pm.expect(body.email).to.be.a(\"string\");\r",
+									"    pm.expect(body.degree).to.be.a(\"string\");\r",
+									"    pm.expect(body.resume).to.be.an(\"object\");\r",
+									"    pm.expect(body.gpa).to.be.a(\"number\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/employers/students/:studentId",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"employers",
+								"students",
+								":studentId"
+							],
+							"variable": [
+								{
+									"key": "studentId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept/Reject Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is an object\", function () {\r",
+									"    pm.expect(body).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Success flag is true\", function () {\r",
+									"    pm.expect(body.success).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Action matches request\", function () {\r",
+									"    var requestAction = pm.request.body.raw ? JSON.parse(pm.request.body.raw).action : null;\r",
+									"    if (requestAction) {\r",
+									"        pm.expect(body.action.toLowerCase()).to.eql(requestAction.toLowerCase());\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has expected fields\", function () {\r",
+									"    pm.expect(body).to.have.property(\"ApplicationID\");\r",
+									"    pm.expect(body).to.have.property(\"Student\");\r",
+									"    pm.expect(body).to.have.property(\"Position\");\r",
+									"    pm.expect(body).to.have.property(\"Employer\");\r",
+									"    pm.expect(body).to.have.property(\"Company\");\r",
+									"    pm.expect(body).to.have.property(\"State\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field types are correct\", function () {\r",
+									"    pm.expect(body.ApplicationID).to.be.a(\"number\");\r",
+									"    pm.expect(body.Student).to.be.a(\"string\");\r",
+									"    pm.expect(body.Position).to.be.a(\"string\");\r",
+									"    pm.expect(body.Employer).to.be.a(\"string\");\r",
+									"    pm.expect(body.Company).to.be.a(\"string\");\r",
+									"    pm.expect(body.State).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"State is ACCEPTED or REJECTED\", function () {\r",
+									"    pm.expect([\"ACCEPTED\", \"REJECTED\"]).to.include(body.State);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"studentId\": 2,\r\n    \"action\": \"accept\",\r\n    \"message\": \"Your passion for robotics has earned you a spot in our team. We look forward to hearing from you soon.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/employers/positions/:positionId/decision",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"employers",
+								"positions",
+								":positionId",
+								"decision"
+							],
+							"variable": [
+								{
+									"key": "positionId",
+									"value": "4",
+									"description": "The ID of the position for which the decision is being made"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Open/Close Position",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is an object\", function () {\r",
+									"    pm.expect(body).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Success flag is true\", function () {\r",
+									"    pm.expect(body.success).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Action field matches request\", function () {\r",
+									"    const requestAction = pm.request.body.raw ? JSON.parse(pm.request.body.raw).action.toLowerCase() : null;\r",
+									"    if (requestAction) {\r",
+									"        pm.expect(body.action.toLowerCase()).to.eql(requestAction);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"positionData has expected fields\", function () {\r",
+									"    pm.expect(body).to.have.property(\"positionData\");\r",
+									"    const pos = body.positionData;\r",
+									"    pm.expect(pos).to.have.property(\"id\");\r",
+									"    pm.expect(pos).to.have.property(\"employerId\");\r",
+									"    pm.expect(pos).to.have.property(\"title\");\r",
+									"    pm.expect(pos).to.have.property(\"requirements\");\r",
+									"    pm.expect(pos).to.have.property(\"description\");\r",
+									"    pm.expect(pos).to.have.property(\"availableSlots\");\r",
+									"    pm.expect(pos).to.have.property(\"status\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"positionData field types are correct\", function () {\r",
+									"    const pos = body.positionData;\r",
+									"    pm.expect(pos.id).to.be.a(\"number\");\r",
+									"    pm.expect(pos.employerId).to.be.a(\"number\");\r",
+									"    pm.expect(pos.title).to.be.a(\"string\");\r",
+									"    pm.expect(pos.requirements).to.be.a(\"string\");\r",
+									"    pm.expect(pos.description).to.be.a(\"string\");\r",
+									"    pm.expect(pos.availableSlots).to.be.a(\"number\");\r",
+									"    pm.expect(pos.status).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status matches action\", function () {\r",
+									"    const requestAction = pm.request.body.raw ? JSON.parse(pm.request.body.raw).action.toLowerCase() : null;\r",
+									"    const status = body.positionData.status.toLowerCase();\r",
+									"    if (requestAction === \"open\") {\r",
+									"        pm.expect(status).to.eql(\"open\");\r",
+									"    } else if (requestAction === \"close\") {\r",
+									"        pm.expect(status).to.eql(\"closed\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"close\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/employers/positions/:positionId/status",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"employers",
+								"positions",
+								":positionId",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "positionId",
+									"value": "4",
+									"description": "The ID of the position to open/close"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Student",
+			"item": [
+				{
+					"name": "Login Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let data = pm.response.json();\r",
+									"\r",
+									"if (data.access_token) {\r",
+									"    pm.collectionVariables.set(\"accessToken\", data.access_token);\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));\r",
+									"\r",
+									"const result = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Response has access token\", () => {\r",
+									"    pm.expect(result).to.have.property(\"access_token\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Access token is a string\", () => {\r",
+									"    pm.expect(result.access_token).to.be.a(\"string\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Bob\",\r\n    \"password\": \"bobpass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Shortlisted Positions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    pm.expect(body).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Applications have expected fields\", function () {\r",
+									"    body.forEach(function(application) {\r",
+									"        pm.expect(application).to.have.property(\"applicationID\");\r",
+									"        pm.expect(application).to.have.property(\"positionID\");\r",
+									"        pm.expect(application).to.have.property(\"Company\");\r",
+									"        pm.expect(application).to.have.property(\"Position\");\r",
+									"        pm.expect(application).to.have.property(\"Status\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Application field types are correct\", function () {\r",
+									"    body.forEach(function(application) {\r",
+									"        pm.expect(application.applicationID).to.be.a(\"number\");\r",
+									"        pm.expect(application.positionID).to.be.a(\"number\");\r",
+									"        pm.expect(application.Company).to.be.a(\"string\");\r",
+									"        pm.expect(application.Position).to.be.a(\"string\");\r",
+									"        pm.expect(application.Status).to.be.a(\"string\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"All applications are SHORTLISTED/ACCEPTED/REJECTED\", function () {\r",
+									"    body.forEach(function(application) {\r",
+									"        pm.expect([\"ACCEPTED\", \"REJECTED\", \"SHORTLISTED\"]).to.include(application.Status);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/students/applications",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"students",
+								"applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Employer Response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is an object\", function () {\r",
+									"    pm.expect(body).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has expected fields\", function () {\r",
+									"    pm.expect(body).to.have.property(\"ApplicationID\");\r",
+									"    pm.expect(body).to.have.property(\"Company\");\r",
+									"    pm.expect(body).to.have.property(\"Employer\");\r",
+									"    pm.expect(body).to.have.property(\"Position\");\r",
+									"    pm.expect(body).to.have.property(\"Status\");\r",
+									"    pm.expect(body).to.have.property(\"Employer Response\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field types are correct\", function () {\r",
+									"    pm.expect(body.ApplicationID).to.be.a(\"number\");\r",
+									"    pm.expect(body.Company === null || typeof body.Company === \"string\").to.eql(true);\r",
+									"    pm.expect(body.Employer === null || typeof body.Employer === \"string\").to.eql(true);\r",
+									"    pm.expect(body.Position).to.be.a(\"string\");\r",
+									"    pm.expect(body.Status).to.be.a(\"string\");\r",
+									"    pm.expect(body[\"Employer Response\"]).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status is valid\", function () {\r",
+									"    pm.expect([\"APPLIED\", \"SHORTLISTED\", \"ACCEPTED\", \"REJECTED\"]).to.include(body.Status);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/students/applications/:position_id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"students",
+								"applications",
+								":position_id"
+							],
+							"variable": [
+								{
+									"key": "position_id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Offer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Top-level success flag is true\", function () {\r",
+									"    pm.expect(body.success).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"'applicationData' field exists\", function () {\r",
+									"    pm.expect(body).to.have.property(\"applicationData\");\r",
+									"});\r",
+									"\r",
+									"var application = body.applicationData;\r",
+									"\r",
+									"pm.test(\"Application object has expected fields\", function () {\r",
+									"    pm.expect(application).to.have.property(\"id\");\r",
+									"    pm.expect(application).to.have.property(\"positionId\");\r",
+									"    pm.expect(application).to.have.property(\"studentId\");\r",
+									"    pm.expect(application).to.have.property(\"staffId\");\r",
+									"    pm.expect(application).to.have.property(\"state\");\r",
+									"    pm.expect(application).to.have.property(\"employerId\");\r",
+									"    pm.expect(application).to.have.property(\"employerResponse\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Application field types are correct\", function () {\r",
+									"    pm.expect(application.id).to.be.a(\"number\");\r",
+									"    pm.expect(application.positionId).to.be.a(\"number\");\r",
+									"    pm.expect(application.studentId).to.be.a(\"number\");\r",
+									"    pm.expect(application.staffId === null || typeof application.staffId === \"number\").to.eql(true);\r",
+									"    pm.expect(application.state).to.be.a(\"string\");\r",
+									"    pm.expect(application.employerId === null || typeof application.employerId === \"number\").to.eql(true);\r",
+									"    pm.expect(application.employerResponse === null || typeof application.employerResponse === \"string\").to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Application state should now be REJECTED\", function () {\r",
+									"    pm.expect(application.state).to.eql(\"REJECTED\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/students/applications/:position_id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"students",
+								"applications",
+								":position_id"
+							],
+							"variable": [
+								{
+									"key": "position_id",
+									"value": "4",
+									"description": "The ID of the position for which the offer was made"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		}
+	]
+}
