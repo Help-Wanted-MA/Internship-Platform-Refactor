@@ -40,6 +40,9 @@ def decide_shortlist(employerId, positionId, studentId, action, message=None):
     transitionContext = TransitionContext(employerId, message)
     if action == "accept":
         application.accept(transitionContext)
+        
+        position = Position.query.get(positionId)
+        position.availableSlots = position.availableSlots - 1
     elif action == "reject":
         application.deny(transitionContext)
     else:
