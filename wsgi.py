@@ -337,6 +337,52 @@ def view_all_positions_command():
 app.cli.add_command(generic_cli)
 
 
+
+'''
+Staff Commands
+'''
+staff_cli = AppGroup('staff', help='Staff object commands')
+
+@staff_cli.command("list", help="Lists all staff in the database")
+def list_staff_command():
+    staff_members = get_all_staff()
+    if staff_members:
+        for staff in staff_members:
+            print(f'Staff ID: {staff.id} | Username: {staff.username}')
+        print("------------------------------------------------------------------------\n")
+    else:
+        print("No staff found")
+
+@staff_cli.command("get", help="Gets a specific staff member by ID")
+@click.argument("staff_id", type=int)
+def get_staff_command(staff_id):
+    try:
+        staff = get_staff(staff_id)
+        print(f'Staff ID: {staff.id} | Username: {staff.username}')
+        print("------------------------------------------------------------------------\n")
+    except Exception as e:
+        print(e)
+
+@staff_cli.command("shortlist_student", help="Shortlist a student for a position")
+@click.argument("position_id", type=int)
+@click.argument("student_id", type=int)
+@click.argument("staff_id", type=int)
+def shortlist_student_command(position_id, student_id, staff_id):
+    try:
+        application = shortlist_student(position_id, student_id, staff_id)
+        print("  Student shortlisted successfully!")
+        print(f"  Position ID: {position_id}")
+        print(f"  Student ID: {student_id}")
+        print(f"  Application Status: {application.state.value}")
+        print("------------------------------------------------------------------------\n")
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+app.cli.add_command(staff_cli)
+
+
+
 '''
 Test Commands
 '''
