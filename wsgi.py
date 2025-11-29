@@ -6,7 +6,7 @@ from App.main import create_app
 from App.controllers import (create_user, get_all_users_json, get_all_users, initialize, get_all_applications,
                              get_application, create_position, decide_shortlist, get_all_employers, get_employer,
                              manage_position_status, get_all_positions, get_position, get_all_students, get_student,
-                             view_employer_response, view_shortlisted_positions)
+                             view_employer_response, view_shortlisted_positions, create_employer)
 
 
 # This commands file allow you to create convenient CLI commands for testing controllers
@@ -64,12 +64,32 @@ Employer Commands
 employer_cli = AppGroup('employer', help='Employer object commands')
 
 
+@employer_cli.command("create", help="Creates a new employer account")
+@click.argument("username")
+@click.argument("password")
+@click.argument("email")
+@click.argument("company")
+def employer_create_command(username, password, email, company):
+    try:
+        result = create_employer(username, password, email, company)
+        if result:
+            print(f"Employer '{username}' created successfully")
+        else:
+            print("Employer creation failed")
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+
 @employer_cli.command("list", help="Lists all employers in the database")
 def list_employers_command():
     employers = get_all_employers()
     if employers:
+        print("========================================================================")
+        print(f"{'ID':<5} {'Username':<22} {'Company':<100}")
+        print("------------------------------------------------------------------------")
         for emp in employers:
-            print(f'Employer ID: {emp.id} | Username: {emp.username}')
+            print(f"{emp.id:<5} {emp.username:<22} {emp.company:<100}")
         print("------------------------------------------------------------------------\n")
     else:
         print("No employers found")
@@ -80,7 +100,10 @@ def list_employers_command():
 def get_employer_command(employer_id):
     try:
         employer = get_employer(employer_id)
-        print(f'Employer ID: {employer.id} | Username: {employer.username}')
+        print("========================================================================")
+        print(f"{'ID':<5} {'Username':<22} {'Company':<100}")
+        print("------------------------------------------------------------------------")
+        print(f"{employer.id:<5} {employer.username:<22} {employer.company:<100}")
         print("------------------------------------------------------------------------\n")
     except Exception as e:
         print(e)
