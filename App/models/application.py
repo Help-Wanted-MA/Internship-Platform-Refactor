@@ -11,11 +11,12 @@ class Application(db.Model):
     staffId = db.Column(db.Integer, db.ForeignKey('staff.id'), nullable=True)
     employerId = db.Column(db.Integer, db.ForeignKey('employer.id'), nullable=True)
     employerResponse = db.Column(db.String(256), nullable=True)
-    state = db.Column(Enum(ApplicationStatus, native_enum=False), nullable=False, default=ApplicationStatus.APPLIED)
+    state = db.Column(Enum(ApplicationStatus, native_enum=False), nullable=False)
 
     def __init__(self, positionId, studentId):
         self.positionId = positionId
         self.studentId = studentId
+        self.state = ApplicationStatus.APPLIED
 
     def get_state(self):
         return get_state_object(self)
