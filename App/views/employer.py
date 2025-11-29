@@ -7,7 +7,9 @@ from App.controllers import (
     create_position,
     manage_position_status,
     decide_shortlist,
-    get_student
+    get_student,
+    view_positions,
+    view_position_shortlist
 )
 
 employer_views = Blueprint('employer_views', __name__)
@@ -28,20 +30,47 @@ def employer_create_position():
     )
     return jsonify({"success": True, "result": pos.get_json()}), 201
 
+# View employer's positions
+@employer_views.route('/employers/positions', methods=['GET'])
+@login_required(Employer)
+def employer_view_positions():
+    employer_id = get_jwt_identity()
+    positions = view_positions(employer_id)
+    return jsonify([position.get_json() for position in positions]), 200
+
+# View shortlist for a position
+@employer_views.route('/employers/positions/<int:position_id>', methods=['GET'])
+@login_required(Employer)
+def employer_view_shortlist(position_id):
+    employer_id = get_jwt_identity()
+    students = view_position_shortlist(employer_id, position_id)
+    return jsonify([student.get_json() for student in students]), 200
+
 # Accept/Reject student from shortlist
 @employer_views.route('/employers/positions/<int:position_id>/decision', methods=['PATCH'])
 @login_required(Employer)
 def employer_decide_shortlist(position_id):
     employer_id = get_jwt_identity()
     data = request.json
-    result = decide_shortlist(
+    application = decide_shortlist(
         employerId=employer_id,
         positionId=position_id,
         studentId=data["studentId"],
-        accept=data["accept"],
+        action=data["action"],
         message=data["message"]
     )
-    return jsonify({"success": True, "result": result.get_json()}), 200
+    
+    result = {
+        "action": data["action"],
+        "success": True,
+        "ApplicationID": application.id,
+        "Student": application.student.username,
+        "Position": application.position.title,
+        "Employer": application.employer.username,
+        "Company": application.employer.company,
+        "State": application.state.value
+    }
+    return jsonify(result), 200
 
 # Open/close position
 @employer_views.route('/employers/positions/<int:position_id>/status', methods=['PATCH'])
@@ -52,9 +81,14 @@ def employer_status_change(position_id):
     result = manage_position_status(
         employerId=employer_id,
         positionId=position_id,
-        status=data["status"]
+        action=data["action"]
     )
-    return jsonify({"success": True, "result": result.get_json()}), 200
+    
+    return jsonify({
+        "action": data["action"],
+        "success": True, 
+        "positionData": result.get_json()
+    }), 200
 
 # Employer view student
 @employer_views.route('/employers/students/<int:student_id>', methods=['GET'])
