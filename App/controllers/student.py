@@ -41,6 +41,10 @@ def reject_offer(studentId, positionId):
         raise ValidationError(f'Student {studentId} was not accepted for position {positionId}')
     
     application.deny(None)
+
+    position = Position.query.get(positionId)
+    position.availableSlots += 1
+
     try:
         db.session.commit()
     except SQLAlchemyError as e:
