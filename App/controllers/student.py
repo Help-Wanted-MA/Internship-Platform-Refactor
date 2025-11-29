@@ -1,7 +1,8 @@
 from App.models import Position, Student, Application
-from App.exceptions.exceptions import InternalError, NotFoundError
+from App.exceptions.exceptions import InternalError, NotFoundError, ValidationError
 from App.states.state_enums import ApplicationStatus
 from App.database import db
+from sqlalchemy.exc import SQLAlchemyError
 
 def view_employer_response(studentId, positionId):
     student = Student.query.get(studentId)
@@ -16,16 +17,38 @@ def view_employer_response(studentId, positionId):
     if application is None:
         raise NotFoundError(f'Application for studentID: {studentId} not found for positionID: {positionId}')
     
-    return application.employerResponse
+    if application.employerResponse is None:
+        raise ValidationError(f'No employer response for application with studentID: {studentId}, positionID: {positionId}')
+    return application
 
 def view_shortlisted_positions(studentId):
     student = Student.query.get(studentId)
     if student is None:
         raise NotFoundError(f'Student with id: {studentId} not found')
     
-    shortlistedApplications = Application.query.filter_by(studentId=studentId, state=ApplicationStatus.SHORTLISTED).all()
-    return shortlistedApplications
+    shortlistedApplications = Application.query.filter(
+        Application.studentId == studentId,
+        Application.state != ApplicationStatus.APPLIED
+    ).all()
+    return shortlistedApplications  
 
+def reject_offer(studentId, positionId):
+    application = Application.query.filter_by(studentId=studentId, positionId=positionId).first()
+    if application is None:
+        raise NotFoundError(f'Application for studentID: {studentId} not found for positionID: {positionId}')
+    
+    if application.state != ApplicationStatus.ACCEPTED:
+        raise ValidationError(f'Student {studentId} was not accepted for position {positionId}')
+    
+    application.deny(None)
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise e
+    
+    return application
+    
 def get_all_students():
     return Student.query.all()
 

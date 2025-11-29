@@ -5,7 +5,8 @@ from App.models import User
 from App.main import create_app
 from App.controllers import (create_user, get_all_users_json, get_all_users, initialize, get_all_applications,
                              get_application, create_position, decide_shortlist, get_all_employers, get_employer,
-                             manage_position_status, get_all_positions, get_position, create_employer)
+                             manage_position_status, get_all_positions, get_position, get_all_students, get_student,
+                             view_employer_response, view_shortlisted_positions, create_employer)
 
 
 # This commands file allow you to create convenient CLI commands for testing controllers
@@ -188,6 +189,66 @@ def employer_manage_status_command(employer_id, position_id, status):
 app.cli.add_command(employer_cli)
 
 
+
+'''
+Student Commands
+'''
+
+student_cli = AppGroup('student', help='Student object commands')
+
+@student_cli.command("get", help="Gets a specific student by ID")
+@click.argument("student_id", type=int)
+def get_student_command(student_id):
+    try:
+        student = get_student(student_id)
+        print(f'Student ID: {student.id} | Username: {student.username} | Degree: {student.degree} | GPA: {student.gpa}')
+        print("------------------------------------------------------------------------\n")
+    except Exception as e:
+        print(e)
+
+@student_cli.command("list", help="Lists all students in the database")
+def list_students_command():
+    students = get_all_students()
+    if students:
+        for stu in students:
+            print(f'Student ID: {stu.id} | Username: {stu.username} | Degree: {stu.degree} | GPA: {stu.gpa}')
+        print("------------------------------------------------------------------------\n")
+    else:
+        print("No students found")
+
+@student_cli.command("view_response", help="View employer response for a specific application")
+@click.argument("student_id", type=int)
+@click.argument("position_id", type=int)
+def view_employer_response_command(student_id, position_id):
+    try:
+        response = view_employer_response(student_id, position_id)
+        print(f'Employer Response for Student ID {student_id} on Position ID {position_id}:')
+        print(f'"{response}"')
+        print("------------------------------------------------------------------------\n")
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+@student_cli.command("view_shortlisted", help="View all shortlisted positions for a student")
+@click.argument("student_id", type=int)
+def view_shortlisted_positions_command(student_id):
+    try:
+        applications = view_shortlisted_positions(student_id)
+        if applications:
+            print(f'Shortlisted Positions for Student ID {student_id}:')
+            for app in applications:
+                print(f'Position ID: {app.positionId} | Application Status: {app.state.value}')
+            print("------------------------------------------------------------------------\n")
+        else:
+            print(f'No shortlisted positions found for Student ID {student_id}.')
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+app.cli.add_command(student_cli)
+
+
+
 '''
 Generic Commands
 '''
@@ -297,6 +358,52 @@ def view_all_positions_command():
 
 
 app.cli.add_command(generic_cli)
+
+
+
+'''
+Staff Commands
+'''
+staff_cli = AppGroup('staff', help='Staff object commands')
+
+@staff_cli.command("list", help="Lists all staff in the database")
+def list_staff_command():
+    staff_members = get_all_staff()
+    if staff_members:
+        for staff in staff_members:
+            print(f'Staff ID: {staff.id} | Username: {staff.username}')
+        print("------------------------------------------------------------------------\n")
+    else:
+        print("No staff found")
+
+@staff_cli.command("get", help="Gets a specific staff member by ID")
+@click.argument("staff_id", type=int)
+def get_staff_command(staff_id):
+    try:
+        staff = get_staff(staff_id)
+        print(f'Staff ID: {staff.id} | Username: {staff.username}')
+        print("------------------------------------------------------------------------\n")
+    except Exception as e:
+        print(e)
+
+@staff_cli.command("shortlist_student", help="Shortlist a student for a position")
+@click.argument("position_id", type=int)
+@click.argument("student_id", type=int)
+@click.argument("staff_id", type=int)
+def shortlist_student_command(position_id, student_id, staff_id):
+    try:
+        application = shortlist_student(position_id, student_id, staff_id)
+        print("  Student shortlisted successfully!")
+        print(f"  Position ID: {position_id}")
+        print(f"  Student ID: {student_id}")
+        print(f"  Application Status: {application.state.value}")
+        print("------------------------------------------------------------------------\n")
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
+app.cli.add_command(staff_cli)
+
 
 
 '''
