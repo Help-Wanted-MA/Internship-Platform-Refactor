@@ -26,6 +26,7 @@ gevent==22.10.2
 gunicorn==20.1.0
 psycopg2-binary==2.9.9
 pytest==7.0.1
+pytest-check==2.6.0
 python-dotenv==1.0.1
 rich==13.4.2
 Werkzeug>=3.0.0
