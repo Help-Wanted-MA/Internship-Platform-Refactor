@@ -1,6 +1,5 @@
 from App.database import db
 from App.models.user import User
-from datetime import date
 
 class Student(User):
     __tablename__ = 'student'
@@ -18,10 +17,6 @@ class Student(User):
         self.degree = degree
         self.resume = resume
         self.gpa = gpa
-
-    def get_age(self):
-        today = date.today()
-        return today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
     
     def get_json(self):
         return {
