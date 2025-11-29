@@ -23,8 +23,9 @@ def create_position(employerId, title, requirements, description, availableSlots
         db.session.rollback()
         raise e
     
-def decide_shortlist(employerId, positionId, studentId, accept, message=None):
-    position = Position.query.filter_by(id=positionId, employerId=employerId)
+def decide_shortlist(employerId, positionId, studentId, action, message=None):
+    action = action.lower()
+    position = Position.query.filter_by(id=positionId, employerId=employerId).first()
     if position is None:
         raise NotFoundError(f'Position with ID: {positionId} not found for employer with ID: {employerId}')
     
@@ -37,10 +38,12 @@ def decide_shortlist(employerId, positionId, studentId, accept, message=None):
         raise ValidationError(f'Student is not Shortlisted for this position')
 
     transitionContext = TransitionContext(employerId, message)
-    if accept:
+    if action == "accept":
         application.accept(transitionContext)
-    else:
+    elif action == "reject":
         application.deny(transitionContext)
+    else:
+        raise ValidationError(f"Action '{action}' does not exist. Please Enter `accept` or `reject`")
 
     try:
         db.session.commit()
@@ -50,19 +53,19 @@ def decide_shortlist(employerId, positionId, studentId, accept, message=None):
     
     return application
 
-def manage_position_status(employerId, positionId, status):
+def manage_position_status(employerId, positionId, action):
     position = Position.query.filter_by(id=positionId, employerId=employerId).first()
-    status = status.lower()
+    action = action.lower()
 
     if position is None:
-        raise NotFoundError(f'Position {positionId} for Employer {employerId}: not found')
+        raise NotFoundError(f'Position {positionId} does not exist or does not belong to Employer {employerId}')
     
-    if status == "open":
+    if action == "open":
         position.open()
-    elif status == "close" or status == "closed":
+    elif action == "close":
         position.closed()
     else:
-        raise ValidationError(f"Status '{status}' does not exist. Please Enter 'open' or 'closed'")
+        raise ValidationError(f"Action '{action}' does not exist. Please Enter `open` or `closed`")
 
     try:
         db.session.commit()
@@ -72,6 +75,25 @@ def manage_position_status(employerId, positionId, status):
     
     return position
 
+def view_positions(employerId):
+    positions = Position.query.filter_by(employerId=employerId).all()
+    return positions
+
+def view_position_shortlist(employerId, positionId):
+    position = Position.query.get(positionId)
+    if position is None:
+        raise NotFoundError(f'Position {positionId} does not exist or does not belong to Employer {employerId}')
+    
+    if position.employerId != int(employerId):
+        raise ValidationError(f'Position does not belong this employer: {employerId}')
+    
+    shortlistedApplications = Application.query.filter(
+        Application.positionId == positionId,
+        Application.state != ApplicationStatus.APPLIED
+    ).all()
+    
+    return [application.student for application in shortlistedApplications]
+    
 def get_all_employers():
     return Employer.query.all()
 
