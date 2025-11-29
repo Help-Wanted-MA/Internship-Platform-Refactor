@@ -1,30 +1,358 @@
 import os, tempfile, pytest, logging, unittest
 from werkzeug.security import check_password_hash, generate_password_hash
+import pytest_check as check
 
 from App.main import create_app
 from App.database import db, create_db
-from App.models import User, Employer, Position, Shortlist, Staff, Student, PositionStatus
-from App.controllers import (
-    create_user,
-    get_all_users_json,
-    login,
-    get_user,
-    get_user_by_username,
-    update_user,
-    open_position,
-    get_positions_by_employer,
-    add_student_to_shortlist,
-    get_shortlist_by_student,
-    decide_shortlist
-)
+from App.models import User, Employer, Position, Staff, Student, PositionStatus, Application, ApplicationStatus
+from App.states.application_states import Applied
+from App.states.state_enums import TransitionContext
+""" from App.controllers import () """
 
+pytest.MAX_DIFF = None
+unittest.TestCase.maxDiff = None
 
 LOGGER = logging.getLogger(__name__)
 
 '''
    Unit Tests
 '''
-class UserUnitTests(unittest.TestCase):
+
+class StudentUnitTests(unittest.TestCase):
+
+    def test_create_student_user(self):
+        newStudent = Student("Bob", "bobpass", "bob@mail.com", "Computer Science", {
+            "name": "Bob",
+            "education": {
+                "school": "University of the West Indies",
+                "bachelor": "B.Sc. Computer Science (Special)"
+                },
+                "skills": {
+                    "langauges": ["C++", "Java", "Python"],
+                    "frameworks": ["REST", "JUnit"]
+                }
+            }, 3.9)
+        
+        expected = {
+            "name": "Bob",
+            "email": "bob@mail.com",
+            "role": "student",
+            "degree": "Computer Science",
+            "resume": {
+                "name": "Bob",
+                "education": {
+                    "school": "University of the West Indies",
+                    "bachelor": "B.Sc. Computer Science (Special)"
+                },
+                "skills": {
+                    "langauges": ["C++", "Java", "Python"],
+                    "frameworks": ["REST", "JUnit"]
+                }
+            },
+            "gpa": 3.9
+        }
+
+        actual = {
+            "name": newStudent.username,
+            "email": newStudent.email,
+            "role": newStudent.role,
+            "degree": newStudent.degree,
+            "resume": newStudent.resume,
+            "gpa": newStudent.gpa
+        }
+
+        self.assertDictEqual(actual, expected)
+
+    def test_student_get_json(self):
+        newStudent = Student("Bob", "bobpass", "bob@mail.com", "Computer Science", {
+            "name": "Bob",
+            "education": {
+                "school": "University of the West Indies",
+                "bachelor": "B.Sc. Computer Science (Special)"
+                },
+                "skills": {
+                    "langauges": ["C++", "Java", "Python"],
+                    "frameworks": ["REST", "JUnit"]
+                }
+            }, 3.9)
+        
+        expected = {
+            "id": None,
+            "username": "Bob",
+            "email": "bob@mail.com",
+            "degree": "Computer Science",
+            "resume": {
+                "name": "Bob",
+                "education": {
+                    "school": "University of the West Indies",
+                    "bachelor": "B.Sc. Computer Science (Special)"
+                },
+                "skills": {
+                    "langauges": ["C++", "Java", "Python"],
+                    "frameworks": ["REST", "JUnit"]
+                }
+            },
+            "gpa": 3.9
+        }
+
+        studentJson = newStudent.get_json()
+
+        self.assertDictEqual(studentJson, expected)
+
+    def test_hashed_student_password(self):
+        student = Student("Bob", "bobpass", "bob@mail.com", "Computer Science", {
+            "name": "Bob",
+            "education": {
+                "school": "University of the West Indies",
+                "bachelor": "B.Sc. Computer Science (Special)"
+                },
+                "skills": {
+                    "langauges": ["C++", "Java", "Python"],
+                    "frameworks": ["REST", "JUnit"]
+                }
+            }, 3.9)
+        
+        assert student.password != "bobpass"
+
+    def test_check_student_password(self):
+        student = Student("Bob", "bobpass", "bob@mail.com", "Computer Science", {
+            "name": "Bob",
+            "education": {
+                "school": "University of the West Indies",
+                "bachelor": "B.Sc. Computer Science (Special)"
+                },
+                "skills": {
+                    "langauges": ["C++", "Java", "Python"],
+                    "frameworks": ["REST", "JUnit"]
+                }
+            }, 3.9)
+        
+        assert student.check_password("bobpass")
+
+class EmployerUnitTests(unittest.TestCase):
+
+    def test_create_employer_user(self):
+        newEmployer = Employer("Cob", "cobpass", "cob@mail.com", "Cob's Company")
+        expected = ["Cob", "cob@mail.com", "employer", "Cob's Company"]
+        actual = [newEmployer.username, newEmployer.email, newEmployer.role, newEmployer.company]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+
+    def testtest_employer_get_json(self):
+        newEmployer = Employer("Cob", "cobpass", "cob@mail.com", "Cob's Company")
+        
+        expected = {
+            "id": None,
+            "username": "Cob",
+            "email": "cob@mail.com",
+            "company": "Cob's Company"
+        }
+
+        employerJson = newEmployer.get_json()
+
+        self.assertDictEqual(employerJson, expected)
+
+    def test_hashed_employer_password(self):
+        employer = Employer("Cob", "cobpass", "cob@mail.com", "Cob's Company")
+        assert employer.password != "cobpass"
+
+    def test_check_employer_password(self):
+        employer = Employer("Cob", "cobpass", "cob@mail.com", "Cob's Company")
+        assert employer.check_password("cobpass")
+
+class StaffUnitTests(unittest.TestCase):
+
+    def test_create_staff_user(self):
+        newStaff = Staff("Dob", "dobpass", "dob@mail.com")
+        
+        expected = ["Dob", "dob@mail.com", "staff"]
+        actual = [newStaff.username, newStaff.email, newStaff.role]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_staff_get_json(self):
+        newStaff = Staff("Dob", "dobpass", "dob@mail.com")
+        
+        expected = {
+            "id": None,
+            "username": "Dob",
+            "email": "dob@mail.com"
+        }
+
+        staffJson = newStaff.get_json()
+
+        self.assertDictEqual(staffJson, expected)
+
+    def test_hashed_staff_password(self):
+        staff = Staff("Dob", "dobpass", "dob@mail.com")
+        assert staff.password != "dobpass"
+
+    def test_check_staff_password(self):
+        staff = Staff("Dob", "dobpass", "dob@mail.com")
+        assert staff.check_password("dobpass")
+
+class PositionUnitTests(unittest.TestCase):
+
+    def test_create_position(self):
+        newPosition = Position(1, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11)
+
+        expected = [1, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11, "open"]
+        actual = [newPosition.employerId, newPosition.title, newPosition.requirements, newPosition.description, newPosition.availableSlots, newPosition.status.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_close_position(self):
+        newPosition = Position(1, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11)
+        newPosition.closed()
+        assert "closed" == newPosition.status.value
+
+    def test_open_position(self):
+        newPosition = Position(1, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11)
+        newPosition.status = PositionStatus.closed
+        newPosition.open()
+        assert "open" == newPosition.status.value
+
+    def test_position_get_json(self):
+        position = Position(1, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11)
+
+        expected = {
+            "id": None,
+            "employerId": 1,
+            "title": "NBA Player",
+            "requirements": "Must be at least 6 feet tall",
+            "description": "Play for NBA",
+            "availableSlots": 11,
+            "status": "open"
+        }
+
+        positionJson = position.get_json()
+
+        self.assertDictEqual(positionJson, expected)
+
+class ApplicationUnitTests(unittest.TestCase):
+
+    def test_create_application(self):
+        newApplication = Application(1, 1)
+
+        expected = [1, 1, "APPLIED"]
+        actual = [newApplication.positionId, newApplication.studentId, newApplication.state.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_get_application_state(self):
+        newApplication = Application(1, 1)
+        stateObj = newApplication.get_state()
+        assert isinstance(stateObj, Applied)
+
+    def test_shortlisting_application(self):
+        application = Application(1, 1)
+        resultString = application.accept(TransitionContext(1))
+
+        expected = ["Shortlisted student application!", "SHORTLISTED", 1]
+        actual = [resultString, application.state.value, application.staffId]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_accepting_application(self):
+        application = Application(1, 1)
+        application.state = ApplicationStatus.SHORTLISTED
+        resultString = application.accept(TransitionContext(1, "Good Application"))
+
+        expected = ["Employer accepted application!", "ACCEPTED", 1, "Good Application"]
+        actual = [resultString, application.state.value, application.employerId, application.employerResponse]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_accepting_accepted_Application(self):
+        application = Application(1, 1)
+        application.state = ApplicationStatus.ACCEPTED
+        resultString = application.accept(TransitionContext)
+
+        expected = ["Application already accepted.", "ACCEPTED"]
+        actual = [resultString, application.state.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_accepting_rejected_Application(self):
+        application = Application(1, 1)
+        application.state = ApplicationStatus.REJECTED
+        resultString = application.accept(TransitionContext)
+
+        expected = ["Application is rejected. No further action.", "REJECTED"]
+        actual = [resultString, application.state.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_deny_applied_application(self):
+        application = Application(1, 1)
+        resultString = application.deny(TransitionContext(1))
+
+        expected = ["Application rejected.", "REJECTED", 1]
+        actual = [resultString, application.state.value, application.staffId]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_deny_shortlisted_application(self):
+        application = Application(1, 1)
+        application.state = ApplicationStatus.SHORTLISTED
+        resultString = application.deny(TransitionContext(1, "Bad Application"))
+
+        expected = ["Employer rejected application.", "Bad Application", 1, "REJECTED"]
+        actual = [resultString, application.employerResponse, application.employerId, application.state.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_deny_accepted_application(self):
+        application = Application(1, 1)
+        application.state = ApplicationStatus.ACCEPTED
+        resultString = application.deny(TransitionContext)
+
+        expected = ["Student rejected offer.", "REJECTED"]
+        actual = [resultString, application.state.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_deny_rejected_application(self):
+        application = Application(1, 1)
+        application.state = ApplicationStatus.REJECTED
+        resultString = application.deny(TransitionContext)
+
+        expected = ["Application already rejected.", "REJECTED"]
+        actual = [resultString, application.state.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_application_get_json(self):
+        application = Application(1, 1)
+
+        expected = {
+            "id": None,
+            "positionId": 1,
+            "studentId": 1,
+            "staffId": None,
+            "state": "APPLIED",
+            "employerId": None,
+            "employerResponse": None
+        }
+
+        applicationJson = application.get_json()
+
+        self.assertDictEqual(applicationJson, expected)
+
+""" class UserUnitTests(unittest.TestCase):
 
     def test_new_user(self):
         user = User("bob", "bobpass")
@@ -75,7 +403,7 @@ class UserUnitTests(unittest.TestCase):
     def test_check_password(self):
         password = "mypass"
         user = User("bob", password)
-        assert user.check_password(password)
+        assert user.check_password(password) """
 
 '''
     Integration Tests
