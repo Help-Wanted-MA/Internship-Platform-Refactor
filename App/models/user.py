@@ -7,7 +7,6 @@ class User(db.Model):
     username =  db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
-    role = db.Column(db.String(50))
     __mapper_args__ = {'polymorphic_identity': 'user', 'polymorphic_on': role}
     
     def __init__(self, username, password, email):
