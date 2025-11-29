@@ -564,6 +564,9 @@ class ApplicationIntegrationTests(unittest.TestCase):
         for act, exp in zip(actual, expected):
             check.equal(act, exp)
 
+        position = get_all_positions()
+        check.equal(position[0].availableSlots, 10)
+
     def test_H_manage_position_status(self):
         position = manage_position_status(2, 1, "close")
         check.equal(position.status.value, "closed")
@@ -583,3 +586,6 @@ class ApplicationIntegrationTests(unittest.TestCase):
     def test_L_test_reject_offer(self):
         application = reject_offer(4, 1)
         check.equal(application.state.value, "REJECTED")
+        
+        position = get_all_positions()
+        check.equal(position[0].availableSlots, 11)
