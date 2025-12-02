@@ -3,15 +3,17 @@ from flask.cli import with_appcontext, AppGroup
 from App.database import db, get_migrate
 from App.models import User
 from App.main import create_app
-from App.controllers import (create_user, get_all_users_json, get_all_users, initialize, get_all_applications,
+from App.controllers import (get_all_users_json, get_all_users, initialize, get_all_applications,
                              get_application, create_position, decide_shortlist, get_all_employers, get_employer,
                              manage_position_status, get_all_positions, get_position, get_all_students, get_student,
-                             view_employer_response, view_shortlisted_positions, create_employer)
+                             view_employer_response, view_shortlisted_positions, create_employer, create_student,
+                             create_staff, get_all_staff, get_staff, shortlist_student)
 
 
 # This commands file allow you to create convenient CLI commands for testing controllers
 app = create_app()
 migrate = get_migrate(app)
+
 
 # This command creates and initializes the database
 @app.cli.command("init", help="Creates and initializes the database")
@@ -24,24 +26,8 @@ def init():
 User Commands
 '''
 
-# Commands can be organized using groups
 
-# create a group, it would be the first argument of the comand
-# eg : flask user <command>
 user_cli = AppGroup('user', help='User object commands')
-
-
-# Then define the command and any parameters and annotate it with the group (@)
-@user_cli.command("create", help="Creates a user")
-@click.argument("username", default="rob")
-@click.argument("password", default="robpass")
-@click.argument("user_type", default="student")
-def create_user_command(username, password, user_type):
-    result = create_user(username, password, user_type)
-    if result:
-        print(f'{username} created successfully')
-    else:
-        print("User creation failed")
 
 
 @user_cli.command("list", help="Lists users in the database")
@@ -194,7 +180,9 @@ app.cli.add_command(employer_cli)
 Student Commands
 '''
 
+
 student_cli = AppGroup('student', help='Student object commands')
+
 
 @student_cli.command("get", help="Gets a specific student by ID")
 @click.argument("student_id", type=int)
@@ -206,6 +194,7 @@ def get_student_command(student_id):
     except Exception as e:
         print(e)
 
+
 @student_cli.command("list", help="Lists all students in the database")
 def list_students_command():
     students = get_all_students()
@@ -215,6 +204,7 @@ def list_students_command():
         print("------------------------------------------------------------------------\n")
     else:
         print("No students found")
+
 
 @student_cli.command("view_response", help="View employer response for a specific application")
 @click.argument("student_id", type=int)
@@ -228,6 +218,7 @@ def view_employer_response_command(student_id, position_id):
     except Exception as e:
         print(e)
         print("------------------------------------------------------------------------\n")
+
 
 @student_cli.command("view_shortlisted", help="View all shortlisted positions for a student")
 @click.argument("student_id", type=int)
@@ -244,6 +235,26 @@ def view_shortlisted_positions_command(student_id):
     except Exception as e:
         print(e)
         print("------------------------------------------------------------------------\n")
+
+
+@student_cli.command("create", help="Creates a new student account")
+@click.argument("username")
+@click.argument("password")
+@click.argument("email")
+@click.argument("degree")
+@click.argument("resume")
+@click.argument("gpa", type=float)
+def student_create_command(username, password, email, degree, resume, gpa):
+    try:
+        result = create_student(username, password, email, degree, resume, gpa)
+        if result:
+            print(f"Student '{username}' created successfully!")
+        else:
+            print("Student creation failed")
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
 
 app.cli.add_command(student_cli)
 
@@ -364,7 +375,10 @@ app.cli.add_command(generic_cli)
 '''
 Staff Commands
 '''
+
+
 staff_cli = AppGroup('staff', help='Staff object commands')
+
 
 @staff_cli.command("list", help="Lists all staff in the database")
 def list_staff_command():
@@ -376,6 +390,7 @@ def list_staff_command():
     else:
         print("No staff found")
 
+
 @staff_cli.command("get", help="Gets a specific staff member by ID")
 @click.argument("staff_id", type=int)
 def get_staff_command(staff_id):
@@ -385,6 +400,7 @@ def get_staff_command(staff_id):
         print("------------------------------------------------------------------------\n")
     except Exception as e:
         print(e)
+
 
 @staff_cli.command("shortlist_student", help="Shortlist a student for a position")
 @click.argument("position_id", type=int)
@@ -401,6 +417,23 @@ def shortlist_student_command(position_id, student_id, staff_id):
     except Exception as e:
         print(e)
         print("------------------------------------------------------------------------\n")
+
+
+@staff_cli.command("create", help="Creates a new staff account")
+@click.argument("username")
+@click.argument("password")
+@click.argument("email")
+def staff_create_command(username, password, email):
+    try:
+        result = create_staff(username, password, email)
+        if result:
+            print(f"Staff '{username}' created successfully!")
+        else:
+            print("Staff creation failed")
+    except Exception as e:
+        print(e)
+        print("------------------------------------------------------------------------\n")
+
 
 app.cli.add_command(staff_cli)
 
