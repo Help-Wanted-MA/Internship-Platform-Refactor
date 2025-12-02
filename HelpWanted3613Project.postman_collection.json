@@ -1,7 +1,8 @@
 {
 	"info": {
-		"_postman_id": "1e463e12-120f-4edf-bf40-6a590a33a20e",
+		"_postman_id": "a4ace6b6-1a88-4a50-ba06-f043d7022770",
 		"name": "HelpWanted3613Project",
+		"description": "### **Ensure the \\[host\\] collection variable is set before running collection tests.**\n\nRunning the Login routes for either Staff, Employer or Student will automatically store the generated token in the \\[accessToken\\] variable.\n\nWhen running requests individually, ensure you first run Login Staff before running staff routes, or Login Employer before running employer routes, or Login Student before running student routes, as routes are protected based on role.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "43999413"
 	},
@@ -53,7 +54,7 @@
 								"init"
 							]
 						},
-						"description": "Initializes the database"
+						"description": "Initializes the database."
 					},
 					"response": [
 						{
@@ -81,7 +82,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Tue, 21 Oct 2025 00:40:30 GMT"
+									"value": "Sat, 29 Nov 2025 21:07:38 GMT"
 								},
 								{
 									"key": "Content-Type",
@@ -105,7 +106,8 @@
 						}
 					]
 				}
-			]
+			],
+			"description": "Contains the initialize route which runs before all other requests during a collection run."
 		},
 		{
 			"name": "Staff",
@@ -165,9 +167,72 @@
 								"api",
 								"login"
 							]
-						}
+						},
+						"description": "Login as a Staff user."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"John\", \r\n    \"password\": \"johnpass\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/login",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:07:54 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "289"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc2NDQ1MDQ3NCwianRpIjoiMmViNzAyNGUtYjNkYi00MmJmLWE5NzgtZWRhOTQxYzFhYzIyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYiLCJuYmYiOjE3NjQ0NTA0NzQsImV4cCI6MTc2NDQ1MTM3NH0.koe0PAXi4nSntP-1huAReHe20mZC5mVIskIGoPDQpxo; Secure; HttpOnly; Path=/"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"access_token\": \"(SomeLongHashString)IueSPJhLDXdDnWUiqdqo2839013j1Sbn8shj1oJsn1oiuj1Sis90KS1s1\"\n}"
+						}
+					]
 				},
 				{
 					"name": "View all Students",
@@ -230,9 +295,59 @@
 								"staff",
 								"students"
 							]
-						}
+						},
+						"description": "Lists all Students and their respective details, such as: IDs, usernames, emails, degrees, resumes and GPAs."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/staff/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"staff",
+										"students"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:09:21 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1058"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"degree\": \"Computer Science\",\n        \"email\": \"alice@student.com\",\n        \"gpa\": 3.5,\n        \"id\": 1,\n        \"resume\": {\n            \"Current Job\": \"Intern\",\n            \"Likes\": \"AI\"\n        },\n        \"username\": \"Alice\"\n    },\n    {\n        \"degree\": \"Mechanical Engineering\",\n        \"email\": \"bob@student.com\",\n        \"gpa\": 2.8,\n        \"id\": 2,\n        \"resume\": {\n            \"Current Job\": \"Unemployed\",\n            \"Likes\": \"Robotics\"\n        },\n        \"username\": \"Bob\"\n    },\n    {\n        \"degree\": \"Business\",\n        \"email\": \"carol@student.com\",\n        \"gpa\": 3.1,\n        \"id\": 3,\n        \"resume\": {\n            \"Current Job\": \"Part-time Clerk\",\n            \"Likes\": \"Marketing\"\n        },\n        \"username\": \"Carol\"\n    },\n    {\n        \"degree\": \"Marine Biology\",\n        \"email\": \"dave@student.com\",\n        \"gpa\": 3.9,\n        \"id\": 4,\n        \"resume\": {\n            \"Current Job\": \"Unemployed\",\n            \"Likes\": \"Diving\"\n        },\n        \"username\": \"Dave\"\n    },\n    {\n        \"degree\": \"Computer Science\",\n        \"email\": \"eve@student.com\",\n        \"gpa\": 3.2,\n        \"id\": 5,\n        \"resume\": {\n            \"Current Job\": \"Unemployed\",\n            \"Likes\": \"Cybersecurity\"\n        },\n        \"username\": \"Eve\"\n    }\n]"
+						}
+					]
 				},
 				{
 					"name": "View Student",
@@ -305,9 +420,75 @@
 								}
 							]
 						},
-						"description": "Returns the details of the Report with the given ID"
+						"description": "Returns the details of a Student user with the given Student ID."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/staff/students/:id",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"staff",
+										"students",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "3",
+											"description": "The ID of the student to view"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:09:38 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "189"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"degree\": \"Business\",\n    \"email\": \"carol@student.com\",\n    \"gpa\": 3.1,\n    \"id\": 3,\n    \"resume\": {\n        \"Current Job\": \"Part-time Clerk\",\n        \"Likes\": \"Marketing\"\n    },\n    \"username\": \"Carol\"\n}"
+						}
+					]
 				},
 				{
 					"name": "View all Positions",
@@ -361,9 +542,59 @@
 								"staff",
 								"positions"
 							]
-						}
+						},
+						"description": "Lists all Positions in the system."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/staff/positions",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"staff",
+										"positions"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:09:49 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1331"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"availableSlots\": 2,\n        \"company\": \"CompanyOne\",\n        \"description\": \"Mine coal for the local village\",\n        \"employerId\": 8,\n        \"id\": 1,\n        \"requirements\": \"A functional body\",\n        \"status\": \"closed\",\n        \"title\": \"Coal Miner\"\n    },\n    {\n        \"availableSlots\": 5,\n        \"company\": \"CompanyTwo\",\n        \"description\": \"Rescue drowning fish and ensure the safety of marinefolk\",\n        \"employerId\": 9,\n        \"id\": 2,\n        \"requirements\": \"Diving experience\",\n        \"status\": \"open\",\n        \"title\": \"Aquarium Lifeguard\"\n    },\n    {\n        \"availableSlots\": 3,\n        \"company\": \"CompanyThree\",\n        \"description\": \"Assist in software development projects\",\n        \"employerId\": 10,\n        \"id\": 3,\n        \"requirements\": \"Knowledge of Python and SQL\",\n        \"status\": \"open\",\n        \"title\": \"Junior Software Engineer\"\n    },\n    {\n        \"availableSlots\": 1,\n        \"company\": \"CompanyOne\",\n        \"description\": \"Assist in lab experiments and data collection\",\n        \"employerId\": 8,\n        \"id\": 4,\n        \"requirements\": \"Lab experience preferred\",\n        \"status\": \"open\",\n        \"title\": \"Research Assistant\"\n    },\n    {\n        \"availableSlots\": 2,\n        \"company\": \"CompanyTwo\",\n        \"description\": \"Support marketing campaigns and social media\",\n        \"employerId\": 9,\n        \"id\": 5,\n        \"requirements\": \"Strong communication skills\",\n        \"status\": \"open\",\n        \"title\": \"Marketing Intern\"\n    }\n]"
+						}
+					]
 				},
 				{
 					"name": "Shortlist Student",
@@ -440,11 +671,77 @@
 									"description": "The ID of the student to shortlist"
 								}
 							]
-						}
+						},
+						"description": "Allows a Staff to shortlist a student for a position, given a Position and Student ID.  \nThis updates an Application and sets its state to \"SHORTLISTED\"."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/staff/positions/:positionId/shortlist/:studentId",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"staff",
+										"positions",
+										":positionId",
+										"shortlist",
+										":studentId"
+									],
+									"variable": [
+										{
+											"key": "positionId",
+											"value": "4",
+											"description": "The ID of the position to shortlist the student for"
+										},
+										{
+											"key": "studentId",
+											"value": "2",
+											"description": "The ID of the student to shortlist"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:10:05 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "155"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ApplicationID\": 17,\n    \"Company\": \"CompanyOne\",\n    \"Position\": \"Research Assistant\",\n    \"Status\": \"SHORTLISTED\",\n    \"Student\": \"Bob\",\n    \"success\": true\n}"
+						}
+					]
 				}
-			]
+			],
+			"description": "Routes accessible to Staff users."
 		},
 		{
 			"name": "Employer",
@@ -504,9 +801,78 @@
 								"api",
 								"login"
 							]
-						}
+						},
+						"description": "Login as an Employer user."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"Frank\", \r\n    \"password\": \"frankpass\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/login",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:10:26 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "289"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc2NDQ1MDYyNiwianRpIjoiNWM4NmI2OGQtMWQxYi00M2ViLWFjZGYtZDM3MzNmNjg1ZjU1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjgiLCJuYmYiOjE3NjQ0NTA2MjYsImV4cCI6MTc2NDQ1MTUyNn0.7H9Lhfmy6XtoiBDlpdCBQbxKmHDrv4urRMfNWLtpyl0; Secure; HttpOnly; Path=/"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": "{\n    \"access_token\": \"(SomeLongHashString)IueSPJhLDXdDnWUiqdqo2839013j1Sbn8shj1oJsn1oiuj1Sis90KS1s1\"\n}"
+						}
+					]
 				},
 				{
 					"name": "Create Position",
@@ -587,9 +953,68 @@
 								"employers",
 								"positions"
 							]
-						}
+						},
+						"description": "Creates a new Position, given the Position's title, requirements, description and amount of available slots."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"New Position\",\r\n    \"requirements\": \"Some requirements\",\r\n    \"description\": \"Test position created from Postman\",\r\n    \"availableSlots\": 3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/employers/positions",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"employers",
+										"positions"
+									]
+								}
+							},
+							"status": "CREATED",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:10:57 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "248"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"result\": {\n        \"availableSlots\": 3,\n        \"description\": \"Test position created from Postman\",\n        \"employerId\": 8,\n        \"id\": 6,\n        \"requirements\": \"Some requirements\",\n        \"status\": \"open\",\n        \"title\": \"New Position\"\n    },\n    \"success\": true\n}"
+						}
+					]
 				},
 				{
 					"name": "View Positions",
@@ -639,9 +1064,59 @@
 								"employers",
 								"positions"
 							]
-						}
+						},
+						"description": "Lists all Positions created by the logged-in Employer."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/employers/positions",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"employers",
+										"positions"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:11:09 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "672"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"availableSlots\": 2,\n        \"description\": \"Mine coal for the local village\",\n        \"employerId\": 8,\n        \"id\": 1,\n        \"requirements\": \"A functional body\",\n        \"status\": \"closed\",\n        \"title\": \"Coal Miner\"\n    },\n    {\n        \"availableSlots\": 1,\n        \"description\": \"Assist in lab experiments and data collection\",\n        \"employerId\": 8,\n        \"id\": 4,\n        \"requirements\": \"Lab experience preferred\",\n        \"status\": \"open\",\n        \"title\": \"Research Assistant\"\n    },\n    {\n        \"availableSlots\": 3,\n        \"description\": \"Test position created from Postman\",\n        \"employerId\": 8,\n        \"id\": 6,\n        \"requirements\": \"Some requirements\",\n        \"status\": \"open\",\n        \"title\": \"New Position\"\n    }\n]"
+						}
+					]
 				},
 				{
 					"name": "View Position Shortlist",
@@ -708,9 +1183,66 @@
 									"value": "4"
 								}
 							]
-						}
+						},
+						"description": "Lists all Students, and their details, that were shortlisted for this Position, given the Position ID."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/employers/positions/:position_id",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"employers",
+										"positions",
+										":position_id"
+									],
+									"variable": [
+										{
+											"key": "position_id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:11:23 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "423"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"degree\": \"Computer Science\",\n        \"email\": \"alice@student.com\",\n        \"gpa\": 3.5,\n        \"id\": 1,\n        \"resume\": {\n            \"Current Job\": \"Intern\",\n            \"Likes\": \"AI\"\n        },\n        \"username\": \"Alice\"\n    },\n    {\n        \"degree\": \"Mechanical Engineering\",\n        \"email\": \"bob@student.com\",\n        \"gpa\": 2.8,\n        \"id\": 2,\n        \"resume\": {\n            \"Current Job\": \"Unemployed\",\n            \"Likes\": \"Robotics\"\n        },\n        \"username\": \"Bob\"\n    }\n]"
+						}
+					]
 				},
 				{
 					"name": "View Student",
@@ -773,9 +1305,66 @@
 									"value": "2"
 								}
 							]
-						}
+						},
+						"description": "Returns the details of a Student user with the given Student ID."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/employers/students/:studentId",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"employers",
+										"students",
+										":studentId"
+									],
+									"variable": [
+										{
+											"key": "studentId",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:11:39 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "193"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"degree\": \"Mechanical Engineering\",\n    \"email\": \"bob@student.com\",\n    \"gpa\": 2.8,\n    \"id\": 2,\n    \"resume\": {\n        \"Current Job\": \"Unemployed\",\n        \"Likes\": \"Robotics\"\n    },\n    \"username\": \"Bob\"\n}"
+						}
+					]
 				},
 				{
 					"name": "Accept/Reject Student",
@@ -864,9 +1453,143 @@
 									"description": "The ID of the position for which the decision is being made"
 								}
 							]
-						}
+						},
+						"description": "Allows an employer to accept or reject a shortlisted Student, given a Position ID.\n\nThis updates an Application and sets its state to either \"ACCEPTED\" or \"REJECTED\" and optionally includes a response message."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success: Accept",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"studentId\": 2,\r\n    \"action\": \"accept\",\r\n    \"message\": \"Your passion for robotics has earned you a spot in our team. We look forward to hearing from you soon.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/employers/positions/:positionId/decision",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"employers",
+										"positions",
+										":positionId",
+										"decision"
+									],
+									"variable": [
+										{
+											"key": "positionId",
+											"value": "4",
+											"description": "The ID of the position for which the decision is being made"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:11:58 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "196"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ApplicationID\": 17,\n    \"Company\": \"CompanyOne\",\n    \"Employer\": \"Frank\",\n    \"Position\": \"Research Assistant\",\n    \"State\": \"ACCEPTED\",\n    \"Student\": \"Bob\",\n    \"action\": \"accept\",\n    \"success\": true\n}"
+						},
+						{
+							"name": "Success: Reject",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"studentId\": 2,\r\n    \"action\": \"reject\",\r\n    \"message\": \"Unfortunately, we do not want to hire you.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/employers/positions/:positionId/decision",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"employers",
+										"positions",
+										":positionId",
+										"decision"
+									],
+									"variable": [
+										{
+											"key": "positionId",
+											"value": "4",
+											"description": "The ID of the position for which the decision is being made"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:13:22 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "196"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ApplicationID\": 17,\n    \"Company\": \"CompanyOne\",\n    \"Employer\": \"Frank\",\n    \"Position\": \"Research Assistant\",\n    \"State\": \"REJECTED\",\n    \"Student\": \"Bob\",\n    \"action\": \"reject\",\n    \"success\": true\n}"
+						}
+					]
 				},
 				{
 					"name": "Open/Close Position",
@@ -966,11 +1689,146 @@
 									"description": "The ID of the position to open/close"
 								}
 							]
-						}
+						},
+						"description": "Allows an Employer to change a Position’s status to open or closed, given the Position ID.\n\nThis updates a Position and sets its status to either \"open\" or \"closed\"."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success: Open",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"open\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/employers/positions/:positionId/status",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"employers",
+										"positions",
+										":positionId",
+										"status"
+									],
+									"variable": [
+										{
+											"key": "positionId",
+											"value": "4",
+											"description": "The ID of the position to open/close"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:14:12 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "298"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"action\": \"open\",\n    \"positionData\": {\n        \"availableSlots\": 1,\n        \"description\": \"Assist in lab experiments and data collection\",\n        \"employerId\": 8,\n        \"id\": 4,\n        \"requirements\": \"Lab experience preferred\",\n        \"status\": \"open\",\n        \"title\": \"Research Assistant\"\n    },\n    \"success\": true\n}"
+						},
+						{
+							"name": "Success: Close",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"action\": \"close\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/employers/positions/:positionId/status",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"employers",
+										"positions",
+										":positionId",
+										"status"
+									],
+									"variable": [
+										{
+											"key": "positionId",
+											"value": "4",
+											"description": "The ID of the position to open/close"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:13:52 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "301"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"action\": \"close\",\n    \"positionData\": {\n        \"availableSlots\": 1,\n        \"description\": \"Assist in lab experiments and data collection\",\n        \"employerId\": 8,\n        \"id\": 4,\n        \"requirements\": \"Lab experience preferred\",\n        \"status\": \"closed\",\n        \"title\": \"Research Assistant\"\n    },\n    \"success\": true\n}"
+						}
+					]
 				}
-			]
+			],
+			"description": "Routes accessible to Employer users."
 		},
 		{
 			"name": "Student",
@@ -1027,9 +1885,72 @@
 								"api",
 								"login"
 							]
-						}
+						},
+						"description": "Login as a Student user."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"Bob\",\r\n    \"password\": \"bobpass\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/login",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:14:35 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "289"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc2NDQ1MDg3NSwianRpIjoiZWM2YjAwMDctOTI3MC00MDcyLThlMzAtZTRlYmQwOTgxMGU2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjIiLCJuYmYiOjE3NjQ0NTA4NzUsImV4cCI6MTc2NDQ1MTc3NX0.aaJTzrVZKBEE13lManY_tumEfaWo1Qk4zHW3rJyYtWE; Secure; HttpOnly; Path=/"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"access_token\": \"(SomeLongHashString)IueSPJhLDXdDnWUiqdqo2839013j1Sbn8shj1oJsn1oiuj1Sis90KS1s1\"\n}"
+						}
+					]
 				},
 				{
 					"name": "View Shortlisted Positions",
@@ -1097,9 +2018,59 @@
 								"students",
 								"applications"
 							]
-						}
+						},
+						"description": "Lists all applications relevant to the logged-in student where they have been shortlisted, accepted, or rejected."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/applications",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"applications"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:15:13 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "309"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"Company\": \"CompanyThree\",\n        \"Position\": \"Junior Software Engineer\",\n        \"Status\": \"SHORTLISTED\",\n        \"applicationID\": 12,\n        \"positionID\": 3\n    },\n    {\n        \"Company\": \"CompanyTwo\",\n        \"Position\": \"Marketing Intern\",\n        \"Status\": \"SHORTLISTED\",\n        \"applicationID\": 22,\n        \"positionID\": 5\n    }\n]"
+						}
+					]
 				},
 				{
 					"name": "View Employer Response",
@@ -1166,9 +2137,66 @@
 									"value": "4"
 								}
 							]
-						}
+						},
+						"description": "Returns the employer’s decision and response message for a specific application, given the Position ID."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/applications/:position_id",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"applications",
+										":position_id"
+									],
+									"variable": [
+										{
+											"key": "position_id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:16:13 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "265"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ApplicationID\": 17,\n    \"Company\": \"CompanyOne\",\n    \"Employer\": \"Frank\",\n    \"Employer Response\": \"Your passion for robotics has earned you a spot in our team. We look forward to hearing from you soon.\",\n    \"Position\": \"Research Assistant\",\n    \"Status\": \"ACCEPTED\"\n}"
+						}
+					]
 				},
 				{
 					"name": "Reject Offer",
@@ -1248,11 +2276,70 @@
 									"description": "The ID of the position for which the offer was made"
 								}
 							]
-						}
+						},
+						"description": "Allows a Student to reject an offer that was previously made to them.  \nThis updates an Application and sets its state to \"REJECTED\"."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/applications/:position_id",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"applications",
+										":position_id"
+									],
+									"variable": [
+										{
+											"key": "position_id",
+											"value": "4",
+											"description": "The ID of the position for which the offer was made"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.9.10"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 29 Nov 2025 21:16:33 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "298"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"applicationData\": {\n        \"employerId\": 8,\n        \"employerResponse\": \"Your passion for robotics has earned you a spot in our team. We look forward to hearing from you soon.\",\n        \"id\": 17,\n        \"positionId\": 4,\n        \"staffId\": 6,\n        \"state\": \"REJECTED\",\n        \"studentId\": 2\n    },\n    \"success\": true\n}"
+						}
+					]
 				}
-			]
+			],
+			"description": "Routes accessible to Student users."
 		}
 	],
 	"auth": {
