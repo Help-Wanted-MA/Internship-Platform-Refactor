@@ -29,6 +29,9 @@ def decide_shortlist(employerId, positionId, studentId, action, message=None):
     if position is None:
         raise NotFoundError(f'Position with ID: {positionId} not found for employer with ID: {employerId}')
     
+    if position.availableSlots == 0:
+        raise ValidationError(f'No more available slots for position with ID: {positionId}')
+    
     application = Application.query.filter_by(positionId=positionId, studentId=studentId).first()
 
     if application is None:
@@ -41,8 +44,7 @@ def decide_shortlist(employerId, positionId, studentId, action, message=None):
     if action == "accept":
         application.accept(transitionContext)
         
-        position = Position.query.get(positionId)
-        position.availableSlots = position.availableSlots - 1
+        position.availableSlots -= 1
     elif action == "reject":
         application.deny(transitionContext)
     else:
