@@ -1,9 +1,8 @@
-# Flask MVC Template
-A template for flask applications structured in the Model View Controller pattern.
+# Help Wanted Internship Platform Refactor  
 1. [Deployed Site](https://internship-platform-np0m.onrender.com/)
 2. [Postman Collection](https://documenter.getpostman.com/view/43999413/2sB3dMvqDx)
 
-# Internship Platform (Infin1te-Loopers)
+# Original Internship Platform (Infin1te-Loopers)
 An app for staff to shortlist students to internship opportunities.  
 * (Employer) create internship position.
 * (Staff) Add student to an internship positions shortlist.
