@@ -43,7 +43,7 @@ def reject_offer(studentId, positionId):
     application.deny(None)
 
     position = Position.query.get(positionId)
-    position.availableSlots = position.availableSlots + 1
+    position.availableSlots += 1
 
     try:
         db.session.commit()

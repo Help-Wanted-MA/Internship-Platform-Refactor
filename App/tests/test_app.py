@@ -7,7 +7,9 @@ from App.database import db, create_db
 from App.models import User, Employer, Position, Staff, Student, PositionStatus, Application, ApplicationStatus
 from App.states.application_states import Applied
 from App.states.state_enums import TransitionContext
-""" from App.controllers import () """
+from App.controllers import (create_student,  get_student, get_all_students, create_staff, get_staff, get_all_staff, create_employer, get_employer, get_all_employers,
+                             login, create_position, get_application, get_all_positions, get_all_applications, shortlist_student, view_position_shortlist,
+                             decide_shortlist, manage_position_status, view_positions, view_shortlisted_positions, view_employer_response, reject_offer)
 
 pytest.MAX_DIFF = None
 unittest.TestCase.maxDiff = None
@@ -208,13 +210,13 @@ class PositionUnitTests(unittest.TestCase):
     def test_close_position(self):
         newPosition = Position(1, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11)
         newPosition.closed()
-        assert "closed" == newPosition.status.value
+        assert newPosition.status.value == "closed"
 
     def test_open_position(self):
         newPosition = Position(1, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11)
         newPosition.status = PositionStatus.closed
         newPosition.open()
-        assert "open" == newPosition.status.value
+        assert newPosition.status.value == "open"
 
     def test_position_get_json(self):
         position = Position(1, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11)
@@ -352,171 +354,238 @@ class ApplicationUnitTests(unittest.TestCase):
 
         self.assertDictEqual(applicationJson, expected)
 
-""" class UserUnitTests(unittest.TestCase):
-
-    def test_new_user(self):
-        user = User("bob", "bobpass")
-        assert user.username == "bob"
-
-    def test_new_student(self):
-            student = Student("john", "johnpass")
-            assert student.username == "john"
-            assert student.role == "student"
-
-    def test_new_staff(self):
-        staff = Staff("jim", "jimpass")
-        assert staff.username == "jim"
-        assert staff.role == "staff"
-
-    def test_new_employer(self):
-        employer = Employer("alice", "alicepass")
-        assert employer.username == "alice"
-        assert employer.role == "employer"
-
-    def test_new_position(self):
-        position = Position("Software Developer", 10, 5) 
-        assert position.title == "Software Developer"
-        assert position.employer_id == 10
-        assert position.status == "open"
-        assert position.number_of_positions == 5
-
-    def test_new_shortlist(self):
-        shortlist = Shortlist(1,2,3)
-        assert shortlist.student_id == 1
-        assert shortlist.position_id == 2
-        assert shortlist.staff_id == 3
-        assert shortlist.status == "pending"
-
-    # pure function no side effects or integrations called
-    def test_get_json(self):
-        user = User("bob", "bobpass")
-        user_json = user.get_json()
-        self.assertEqual(user_json["username"], "bob")
-        self.assertTrue("id" in user.get_json())
-    
-    def test_hashed_password(self):
-        password = "mypass"
-        hashed = generate_password_hash(password)
-        user = User("bob", password)
-        assert user.password != password
-
-    def test_check_password(self):
-        password = "mypass"
-        user = User("bob", password)
-        assert user.check_password(password) """
-
 '''
     Integration Tests
 '''
 
 # This fixture creates an empty database for the test and deletes it after the test
 # scope="class" would execute the fixture once and resued for all methods in the class
-@pytest.fixture(autouse=True, scope="function")
+@pytest.fixture(autouse=True, scope="module")
 def empty_db():
     app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
-    
-    with app.app_context():
-        create_db()
-        yield app.test_client()
-        db.drop_all()
+    create_db()
+    yield app.test_client()
+    db.drop_all()
 
 
-class UserIntegrationTests(unittest.TestCase):
+class UserCreationIntegrationTests(unittest.TestCase):
 
-    def test_create_user(self):
+    def test_A_create_student_no_positions(self):
+        assert create_student("Bob", "bobpass", "bob@mail.com", "Computer Science", {
+            "name": "Bob",
+            "education": {
+                "school": "University of the West Indies",
+                "bachelor": "B.Sc. Computer Science (Special)"
+                },
+                "skills": {
+                    "langauges": ["C++", "Java", "Python"],
+                    "frameworks": ["REST", "JUnit"]
+                }
+            }, 3.9)
         
-        staff = create_user("rick", "bobpass", "staff")
-        assert staff.username == "rick" 
+        newStudent = get_student(1)
 
-        employer = create_user("sam", "sampass", "employer")
-        assert employer.username == "sam"
+        expected = {
+            "id": 1,
+            "name": "Bob",
+            "email": "bob@mail.com",
+            "degree": "Computer Science",
+            "resume": {
+                "name": "Bob",
+                "education": {
+                    "school": "University of the West Indies",
+                    "bachelor": "B.Sc. Computer Science (Special)"
+                },
+                "skills": {
+                    "langauges": ["C++", "Java", "Python"],
+                    "frameworks": ["REST", "JUnit"]
+                }
+            },
+            "gpa": 3.9
+        }
 
-        student = create_user("hannah", "hannahpass", "student")
-        assert student.username == "hannah"
+        actual = {
+            "id": newStudent.id,
+            "name": newStudent.username,
+            "email": newStudent.email,
+            "degree": newStudent.degree,
+            "resume": newStudent.resume,
+            "gpa": newStudent.gpa
+        }
 
-   # def test_get_all_users_json(self):
-     #   users_json = get_all_users_json()
-      #  self.assertListEqual([{"id":1, "username":"bob"}, {"id":2, "username":"rick"}], users_json)
+        self.assertDictEqual(actual, expected)
 
-    # Tests data changes in the database
-    #def test_update_user(self):
-      #  update_user(1, "ronnie")
-      #  user = get_user(1)
-       # assert user.username == "ronnie"
+    def test_B_student_login(self):
+        assert login("Bob", "bobpass") != None
         
-    def test_open_position(self):
-        position_count = 2
-        employer = create_user("sally", "sallypass", "employer")
-        assert employer is not None
-        position = open_position("IT Support", employer.id, position_count)
-        positions = get_positions_by_employer(employer.id)
-        assert position is not None
-        assert position.number_of_positions == position_count
-        assert len(positions) > 0
-        assert any(p.id == position.id for p in positions)
+    def test_C_get_all_student(self):
+        students = get_all_students()
+        assert students[0].id == 1
         
-        invalid_position = open_position("Developer",-1,1)
-        assert invalid_position is False
+    def test_D_create_employer(self):
+        assert create_employer("Cob", "cobpass", "cob@mail.com", "Cob's Company")
+
+        newEmployer = get_employer(2)
+
+        expected = [2, "Cob", "cob@mail.com", "Cob's Company"]
+        actual = [newEmployer.id, newEmployer.username, newEmployer.email, newEmployer.company]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+        
+    def test_E_employer_login(self):
+        login("Cob", "cobpass")
+
+    def test_F_get_all_employer(self):
+        employers = get_all_employers()
+        assert employers[0].id == 2
+
+    def test_G_create_staff(self):
+        assert create_staff("Dob", "dobpass", "dob@mail.com")
+
+        newStaff = get_staff(3)
+
+        expected = [3, "Dob", "dob@mail.com"]
+        actual = [newStaff.id, newStaff.username, newStaff.email]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+        
+    def test_H_staff_login(self):
+        login("Dob", "dobpass")
+
+    def test_I_get_all_staff(self):
+        staff = get_all_staff()
+        assert staff[0].id == 3
+
+class ApplicationIntegrationTests(unittest.TestCase):
+
+    def test_A_create_position(self):
+        newPosition = create_position(2, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11)
+
+        expected = [1, 2, "NBA Player", "Must be at least 6 feet tall", "Play for NBA", 11, "open"]
+        actual = [newPosition.id, newPosition.employerId, newPosition.title, newPosition.requirements, newPosition.description, newPosition.availableSlots, newPosition.status.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+        newApplication = get_application(1)
+
+        expected = [1, 1, 1, "APPLIED"]
+        actual = [newApplication.id, newApplication.positionId, newApplication.studentId, newApplication.state.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_B_create_student_positions(self):
+        assert create_student("Fob", "fobpass", "fob@mail.com", "Basketball Playing", {
+            "name": "Fob",
+            "education": {
+                "school": "University of the West Indies",
+                "bachelor": "B.Sc. Play Bball"
+                },
+                "skills": {
+                    "position": ["All"]
+                }
+            }, 5)
+        
+        newStudent = get_student(4)
+        newApplication = get_application(2)
+
+        expected = {
+            "id": 4,
+            "name": "Fob",
+            "email": "fob@mail.com",
+            "degree": "Basketball Playing",
+            "resume": {
+                "name": "Fob",
+                "education": {
+                    "school": "University of the West Indies",
+                    "bachelor": "B.Sc. Play Bball"
+                },
+                "skills": {
+                    "position": ["All"]
+                }
+            },
+            "gpa": 5
+        }
+
+        actual = {
+            "id": newStudent.id,
+            "name": newStudent.username,
+            "email": newStudent.email,
+            "degree": newStudent.degree,
+            "resume": newStudent.resume,
+            "gpa": newStudent.gpa
+        }
+
+        self.assertDictEqual(actual, expected)
+
+        expected = [2, 1, 4, "APPLIED"]
+        actual = [newApplication.id, newApplication.positionId, newApplication.studentId, newApplication.state.value]
+
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
+
+    def test_C_get_all_positions(self):
+        positions = get_all_positions()
+        assert positions[0].id == 1
+
+    def test_D_get_all_applications(self):
+        applications = get_all_applications()
+        
+        for i, app in enumerate(applications):
+            check.equal(app.id, i+1)
+
+    def test_E_shortlist_application(self):
+        application = shortlist_student(1, 1, 3)
+        assert application.state.value == "SHORTLISTED"
+        shortlist_student(1, 4, 3)
+
+    def test_F_view_position_shortlist(self):
+        positionShortlist = view_position_shortlist(2, 1)
+        check.equal(positionShortlist[0].id, 1)
+        check.equal(positionShortlist[1].id, 4)
+
+    def test_G_decide_shortlist(self):
+        rejectedApplcation = decide_shortlist(2, 1, 1, "reject", "Bad Application")
+        acceptedApplcation = decide_shortlist(2, 1, 4, "accept", "Good Application")
 
 
-    def test_add_to_shortlist(self):
-        position_count = 3
-        staff = create_user("linda", "lindapass", "staff")
-        assert staff is not None
-        student = create_user("hank", "hankpass", "student")
-        assert student is not None
-        employer =  create_user("ken", "kenpass", "employer")
-        assert employer is not None
-        position = open_position("Database Manager", employer.id, position_count)
-        invalid_position = open_position("Developer",-1,1)
-        assert invalid_position is False
-        added_shortlist = add_student_to_shortlist(student.id, position.id ,staff.id)
-        assert position is not None
-        assert (added_shortlist)
-        shortlists = get_shortlist_by_student(student.id)
-        assert any(s.id == added_shortlist.id for s in shortlists)
+        expected = [1, 2,  "REJECTED", "Bad Application"]
+        actual = [rejectedApplcation.id, rejectedApplcation.employerId, rejectedApplcation.state.value, rejectedApplcation.employerResponse]
 
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
 
-    def test_decide_shortlist(self):
-        position_count = 3
-        student = create_user("jack", "jackpass", "student")
-        assert student is not None
-        staff = create_user ("pat", "patpass", "staff")
-        assert staff is not None
-        employer =  create_user("frank", "pass", "employer")
-        assert employer is not None
-        position = open_position("Intern", employer.id, position_count)
-        assert position is not None
-        stud_shortlist = add_student_to_shortlist(student.id, position.id ,staff.id)
-        assert (stud_shortlist)
-        decided_shortlist = decide_shortlist(student.id, position.id, "accepted")
-        assert (decided_shortlist)
-        shortlists = get_shortlist_by_student(student.id)
-        assert any(s.status == PositionStatus.accepted for s in shortlists)
-        assert position.number_of_positions == (position_count-1)
-        assert len(shortlists) > 0
-        invalid_decision = decide_shortlist(-1, -1, "accepted")
-        assert invalid_decision is False
+        expected = [2, 2,  "ACCEPTED", "Good Application"]
+        actual = [acceptedApplcation.id, acceptedApplcation.employerId, acceptedApplcation.state.value, acceptedApplcation.employerResponse]
 
+        for act, exp in zip(actual, expected):
+            check.equal(act, exp)
 
-    def test_student_view_shortlist(self):
+        position = get_all_positions()
+        check.equal(position[0].availableSlots, 10)
 
-        student = create_user("john", "johnpass", "student")
-        assert student is not None
-        staff = create_user ("tim", "timpass", "staff")
-        assert staff is not None
-        employer =  create_user("joe", "joepass", "employer")
-        assert employer is not None
-        position = open_position("Software Intern", employer.id, 4)
-        assert position is not None
-        shortlist = add_student_to_shortlist(student.id, position.id ,staff.id)
-        shortlists = get_shortlist_by_student(student.id)
-        assert any(shortlist.id == s.id for s in shortlists)
-        assert len(shortlists) > 0
+    def test_H_manage_position_status(self):
+        position = manage_position_status(2, 1, "close")
+        check.equal(position.status.value, "closed")
 
-    # Tests data changes in the database
-    #def test_update_user(self):
-    #    update_user(1, "ronnie")
-    #   user = get_user(1)
-    #   assert user.username == "ronnie"
+    def test_I_view_positions(self):
+        positions = view_positions(2)
+        check.equal(positions[0].id, 1)
 
+    def test_J_view_shortlisted_positions(self):
+        shortlistedPositions = view_shortlisted_positions(4)
+        check.equal(shortlistedPositions[0].id, 2)
+
+    def test_K_view_employer_response(self):
+        application = view_employer_response(1, 1)
+        check.equal(application.employerResponse, "Bad Application")
+
+    def test_L_test_reject_offer(self):
+        application = reject_offer(4, 1)
+        check.equal(application.state.value, "REJECTED")
+        
+        position = get_all_positions()
+        check.equal(position[0].availableSlots, 11)
