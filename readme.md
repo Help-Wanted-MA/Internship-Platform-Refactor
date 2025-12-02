@@ -1,7 +1,7 @@
 # Flask MVC Template
 A template for flask applications structured in the Model View Controller pattern.
 1. [Deployed Site](https://internship-platform-np0m.onrender.com/)
-2. [Postman Collection](https://documenter.getpostman.com/view/42693601/2sB3dLUC28)
+2. [Postman Collection](https://documenter.getpostman.com/view/43999413/2sB3dMvqDx)
 
 # Internship Platform (Infin1te-Loopers)
 An app for staff to shortlist students to internship opportunities.  
